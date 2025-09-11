@@ -146,8 +146,12 @@
             <input type="file" id="import-file-input" accept=".json" style="display: none;">
         </footer>
     </div>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
+<script type="module">
+    // --- Firebase SDK Imports ---
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
     // --- DOM Element Selection ---
     const elements = {
         currentMonthDisplay: document.getElementById('current-month-display'),
@@ -173,8 +177,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- State Management ---
     let currentDate = new Date(); 
-    let allData = JSON.parse(localStorage.getItem('cashflowData')) || {};
+    let allData = {};
+    let app, auth, db, userId, unsubscribeFromFirestore;
 
+    // --- Firebase Setup (these variables are injected by the environment) ---
+    const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    
     // --- Utility Functions ---
     const getMonthKey = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
     const formatCurrency = (amount) => `₹${amount.toFixed(2)}`;
@@ -195,32 +204,34 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => { elements.formMessage.style.opacity = 0; }, 4000);
     }
     
-    const saveData = () => localStorage.setItem('cashflowData', JSON.stringify(allData));
+    const saveData = async () => {
+        if (!db || !userId) {
+            showMessage("Cannot save. Not connected to the cloud.", true);
+            return;
+        }
+        try {
+            const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/cashflowData/main`);
+            await setDoc(userDocRef, { data: JSON.stringify(allData) });
+        } catch (error) {
+            console.error("Error saving to Firestore:", error);
+            showMessage("Failed to save data to the cloud.", true);
+        }
+    };
     
     const getOpeningBalance = (date) => {
         const thisMonthKey = getMonthKey(date);
         if (allData[thisMonthKey] && allData[thisMonthKey].hasOwnProperty('startingOnline')) {
             return { online: allData[thisMonthKey].startingOnline, cash: allData[thisMonthKey].startingCash };
         }
-
         const prevMonthDate = new Date(date);
         prevMonthDate.setDate(1);
         prevMonthDate.setMonth(prevMonthDate.getMonth() - 1);
-
-        if (prevMonthDate.getFullYear() < 2020) {
-            return { online: 0, cash: 0 }; 
-        }
-
+        if (prevMonthDate.getFullYear() < 2020) return { online: 0, cash: 0 }; 
         const prevMonthKey = getMonthKey(prevMonthDate);
         const prevMonthData = allData[prevMonthKey];
-
         if (prevMonthData) {
-            const closingOnline = (prevMonthData.transactions || [])
-                .filter(t => t.fundType === 'Online')
-                .reduce((bal, t) => bal + (t.type === 'income' ? t.amount : -t.amount), prevMonthData.startingOnline || 0);
-            const closingCash = (prevMonthData.transactions || [])
-                .filter(t => t.fundType === 'Cash')
-                .reduce((bal, t) => bal + (t.type === 'income' ? t.amount : -t.amount), prevMonthData.startingCash || 0);
+            const closingOnline = (prevMonthData.transactions || []).filter(t => t.fundType === 'Online').reduce((bal, t) => bal + (t.type === 'income' ? t.amount : -t.amount), prevMonthData.startingOnline || 0);
+            const closingCash = (prevMonthData.transactions || []).filter(t => t.fundType === 'Cash').reduce((bal, t) => bal + (t.type === 'income' ? t.amount : -t.amount), prevMonthData.startingCash || 0);
             return { online: closingOnline, cash: closingCash };
         } else {
             return getOpeningBalance(prevMonthDate);
@@ -232,43 +243,25 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const openingBalances = getOpeningBalance(currentDate);
             const monthKey = getMonthKey(currentDate);
-            
-            if (!allData[monthKey]) {
-                allData[monthKey] = { transactions: [] };
-            }
-
+            if (!allData[monthKey]) allData[monthKey] = { transactions: [] };
             allData[monthKey].startingOnline = openingBalances.online;
             allData[monthKey].startingCash = openingBalances.cash;
-            
             const monthData = allData[monthKey];
             elements.currentMonthDisplay.textContent = currentDate.toLocaleString('default', { month: 'long', year: 'numeric' });
-            
-            const onlineBalance = monthData.transactions
-                .filter(t => t.fundType === 'Online')
-                .reduce((bal, t) => bal + (t.type === 'income' ? t.amount : -t.amount), monthData.startingOnline);
-
-            const cashBalance = monthData.transactions
-                .filter(t => t.fundType === 'Cash')
-                .reduce((bal, t) => bal + (t.type === 'income' ? t.amount : -t.amount), monthData.startingCash);
-            
+            const onlineBalance = monthData.transactions.filter(t => t.fundType === 'Online').reduce((bal, t) => bal + (t.type === 'income' ? t.amount : -t.amount), monthData.startingOnline);
+            const cashBalance = monthData.transactions.filter(t => t.fundType === 'Cash').reduce((bal, t) => bal + (t.type === 'income' ? t.amount : -t.amount), monthData.startingCash);
             const openingBalanceTotal = monthData.startingOnline + monthData.startingCash;
             const totalGains = monthData.transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
             const totalExpenses = monthData.transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
-
             elements.openingBalance.textContent = formatCurrency(openingBalanceTotal);
             elements.totalGains.textContent = formatCurrency(totalGains);
             elements.totalExpenses.textContent = formatCurrency(totalExpenses);
             elements.onlineBalance.textContent = formatCurrency(onlineBalance);
             elements.cashBalance.textContent = formatCurrency(cashBalance);
             elements.closingBalance.textContent = formatCurrency(openingBalanceTotal + totalGains - totalExpenses);
-
-            // Transaction List Rendering
             elements.transactionList.innerHTML = '';
             const filterDate = elements.dateFilter.value;
-            const transactionsToDisplay = monthData.transactions
-                .filter(tx => !filterDate || tx.date === filterDate)
-                .sort((a, b) => new Date(b.date) - new Date(a.date));
-
+            const transactionsToDisplay = monthData.transactions.filter(tx => !filterDate || tx.date === filterDate).sort((a, b) => new Date(b.date) - new Date(a.date));
             if (transactionsToDisplay.length === 0) {
                 elements.transactionList.innerHTML = `<p class="empty-list-text">${filterDate ? 'No transactions on this date.' : 'No transactions this month!'}</p>`;
             } else {
@@ -278,27 +271,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     const fundBadgeClass = tx.fundType === 'Online' ? 'bg-blue text-blue' : 'bg-yellow text-yellow';
                     const amountClass = tx.type === 'income' ? 'amount-income' : 'amount-expense';
                     const sign = tx.type === 'income' ? '+' : '-';
-
-                    txEl.innerHTML = `
-                        <div class="transaction-details">
-                            <span class="transaction-type-badge ${fundBadgeClass}">${tx.fundType}</span>
-                            <div>
-                                <p class="transaction-description">${tx.description}</p>
-                                <p class="transaction-date">${formatDisplayDate(tx.date)}</p>
-                            </div>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 1rem;">
-                            <span class="${amountClass}">${sign}${formatCurrency(tx.amount)}</span>
-                            <button data-id="${tx.id}" class="delete-btn"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button>
-                        </div>`;
+                    txEl.innerHTML = `<div class="transaction-details"><span class="transaction-type-badge ${fundBadgeClass}">${tx.fundType}</span><div><p class="transaction-description">${tx.description}</p><p class="transaction-date">${formatDisplayDate(tx.date)}</p></div></div><div style="display: flex; align-items: center; gap: 1rem;"><span class="${amountClass}">${sign}${formatCurrency(tx.amount)}</span><button data-id="${tx.id}" class="delete-btn"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button></div>`;
                     elements.transactionList.appendChild(txEl);
                 });
             }
             elements.monthSelect.value = currentDate.getMonth();
             elements.yearSelect.value = currentDate.getFullYear();
         } catch (error) {
-            console.error("Error during rendering:", error);
-            elements.transactionList.innerHTML = `<p class="empty-list-text" style="color: red;">A critical error occurred. Please check the console.</p>`;
+            console.error("Error rendering:", error);
+            elements.transactionList.innerHTML = `<p class="empty-list-text" style="color: red;">A critical error occurred.</p>`;
         }
     }
 
@@ -306,55 +287,35 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleFormSubmit(event) {
         event.preventDefault();
         const type = event.submitter.name;
-        
         const formElements = elements.form.elements;
         const description = formElements.description.value;
         const amount = parseFloat(formElements.amount.value);
         const dateInputStr = formElements.date.value.trim();
         const fundType = formElements['fund-type'].value;
-        
         if (!description || !dateInputStr || isNaN(amount) || amount <= 0) {
-            showMessage("Please fill all fields correctly.");
-            return;
+            showMessage("Please fill all fields correctly."); return;
         }
-
         const dateParts = dateInputStr.split('/');
-        let transactionDate;
-        let dateValueForStorage; 
-
+        let transactionDate, dateValueForStorage;
         if (dateParts.length === 3) {
             const day = parseInt(dateParts[0], 10);
             const month = parseInt(dateParts[1], 10) - 1; 
             const year = parseInt(dateParts[2], 10);
-
             if (!isNaN(day) && !isNaN(month) && !isNaN(year) && year > 1900 && year < 2100) {
                 transactionDate = new Date(year, month, day);
                 if (transactionDate.getFullYear() !== year || transactionDate.getMonth() !== month || transactionDate.getDate() !== day) {
-                    showMessage("The date you entered is not valid.");
-                    return;
+                    showMessage("The date you entered is not valid."); return;
                 }
                 dateValueForStorage = formatDateForStorage(transactionDate);
             }
         }
-        
         if (!dateValueForStorage) {
-             showMessage("Please enter the date in DD/MM/YYYY format.");
-             return;
+             showMessage("Please enter the date in DD/MM/YYYY format."); return;
         }
-
         const transactionMonthKey = getMonthKey(transactionDate);
-
-        if (!allData[transactionMonthKey]) {
-            allData[transactionMonthKey] = { transactions: [] };
-        }
-
-        allData[transactionMonthKey].transactions.push({
-            id: Date.now(), description, amount, fundType, type,
-            date: dateValueForStorage 
-        });
-
+        if (!allData[transactionMonthKey]) allData[transactionMonthKey] = { transactions: [] };
+        allData[transactionMonthKey].transactions.push({ id: Date.now(), description, amount, fundType, type, date: dateValueForStorage });
         saveData();
-        renderUI(); 
         elements.form.reset();
         elements.form.elements.date.value = formatDisplayDate(new Date());
     }
@@ -366,12 +327,9 @@ document.addEventListener('DOMContentLoaded', () => {
             for (const monthKey in allData) {
                 const initialLength = allData[monthKey].transactions.length;
                 allData[monthKey].transactions = allData[monthKey].transactions.filter(tx => tx.id !== txId);
-                if(allData[monthKey].transactions.length < initialLength) {
-                    break; 
-                }
+                if(allData[monthKey].transactions.length < initialLength) break; 
             }
             saveData();
-            renderUI(); 
         }
     }
 
@@ -392,7 +350,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function populateSelectors() {
         const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         elements.monthSelect.innerHTML = months.map((month, index) => `<option value="${index}">${month}</option>`).join('');
-
         const currentYear = new Date().getFullYear();
         let yearOptions = '';
         for (let year = currentYear - 5; year <= currentYear + 5; year++) {
@@ -403,8 +360,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function exportData() {
         if (Object.keys(allData).length === 0) {
-            showMessage("There is no data to export.", true);
-            return;
+            showMessage("There is no data to export.", true); return;
         }
         const dataStr = JSON.stringify(allData, null, 2);
         const dataBlob = new Blob([dataStr], {type: "application/json"});
@@ -422,14 +378,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleImport(event) {
         const file = event.target.files[0];
         if (!file) return;
-
         const reader = new FileReader();
         reader.onload = function(e) {
             try {
                 const importedData = JSON.parse(e.target.result);
                 if (typeof importedData === 'object' && importedData !== null) {
                     allData = importedData;
-                    saveData();
+                    saveData(); // Save the newly imported data to the cloud
                     const firstMonth = Object.keys(allData)[0];
                     if (firstMonth) {
                         const [year, month] = firstMonth.split('-');
@@ -450,8 +405,61 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.readAsText(file);
         event.target.value = '';
     }
+    
+    // --- Cloud Syncing Logic ---
+    function listenForDataChanges() {
+        if (unsubscribeFromFirestore) unsubscribeFromFirestore(); 
 
-    // --- Initialization ---
+        const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/cashflowData/main`);
+        unsubscribeFromFirestore = onSnapshot(userDocRef, (docSnap) => {
+            if (docSnap.exists()) {
+                const cloudData = JSON.parse(docSnap.data().data);
+                if (JSON.stringify(allData) !== JSON.stringify(cloudData)) {
+                    allData = cloudData;
+                    renderUI(); 
+                }
+            } else {
+                renderUI();
+            }
+        }, (error) => {
+            console.error("Error listening for data:", error);
+            showMessage("Lost connection to the cloud.", true);
+        });
+    }
+
+    async function initializeAppAndAuth() {
+        if (!firebaseConfig || Object.keys(firebaseConfig).length === 0) {
+            console.error("Firebase config is missing!");
+            showMessage("Cannot connect to cloud services.", true);
+            renderUI(); // Render the UI in offline mode
+            return;
+        }
+        app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                userId = user.uid;
+                listenForDataChanges();
+            } else {
+                try {
+                    const authToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                    if (authToken) {
+                        await signInWithCustomToken(auth, authToken);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                } catch (error) {
+                    console.error("Authentication failed:", error);
+                    showMessage("Could not sign in. Syncing is disabled.", true);
+                    renderUI(); // Render UI even if auth fails
+                }
+            }
+        });
+    }
+
+    // --- App Initialization ---
     populateSelectors();
     elements.form.addEventListener('submit', handleFormSubmit);
     elements.transactionList.addEventListener('click', handleDelete);
@@ -469,8 +477,7 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.importFileInput.addEventListener('change', handleImport);
     
     elements.form.elements.date.value = formatDisplayDate(new Date());
-    renderUI();
-});
+    initializeAppAndAuth();
 </script>
 </body>
 </html>
