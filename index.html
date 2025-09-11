@@ -181,8 +181,27 @@
     let app, auth, db, userId, unsubscribeFromFirestore;
 
     // --- Firebase Setup (these variables are injected by the environment) ---
-    const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAXiD1yVHFGNScOLobDOQ9dEi-Sq2u4Atc",
+  authDomain: "expense-tracking-a18c8.firebaseapp.com",
+  projectId: "expense-tracking-a18c8",
+  storageBucket: "expense-tracking-a18c8.firebasestorage.app",
+  messagingSenderId: "953094054634",
+  appId: "1:953094054634:web:b8317148d491d75c7cad93",
+  measurementId: "G-38RM1PQNGZ"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
     
     // --- Utility Functions ---
     const getMonthKey = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
@@ -481,4 +500,5 @@
 </script>
 </body>
 </html>
+
 
