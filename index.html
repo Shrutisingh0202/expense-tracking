@@ -141,7 +141,6 @@
             </section>
         </main>
         <footer>
-            <button id="load-sample-data" class="footer-button">Load Sample Data</button>
             <button id="export-data" class="footer-button">Export Data</button>
             <button id="import-data" class="footer-button">Import Data</button>
             <input type="file" id="import-file-input" accept=".json" style="display: none;">
@@ -167,7 +166,6 @@ document.addEventListener('DOMContentLoaded', () => {
         yearSelect: document.getElementById('year-select'),
         dateFilter: document.getElementById('date-filter'),
         clearFilterBtn: document.getElementById('clear-filter-btn'),
-        loadSampleDataBtn: document.getElementById('load-sample-data'),
         exportDataBtn: document.getElementById('export-data'),
         importDataBtn: document.getElementById('import-data'),
         importFileInput: document.getElementById('import-file-input')
@@ -402,47 +400,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         elements.yearSelect.innerHTML = yearOptions;
     }
-
-    function loadSampleData() {
-        const sampleData = {
-            "2025-08": {
-                startingOnline: 2206.09,
-                startingCash: 120.00,
-                transactions: [
-                    { id: 1, description: 'gift', amount: 366.00, fundType: 'Online', type: 'expense', date: '2025-08-03' },
-                    { id: 2, description: 'friendship bracelet', amount: 10.00, fundType: 'Online', type: 'expense', date: '2025-08-03' },
-                    { id: 3, description: 'ice cream', amount: 20.00, fundType: 'Online', type: 'expense', date: '2025-08-04' },
-                    { id: 4, description: 'razor', amount: 111.79, fundType: 'Online', type: 'expense', date: '2025-08-06' },
-                    { id: 5, description: 'nimbooz', amount: 20.00, fundType: 'Online', type: 'expense', date: '2025-08-06' },
-                    { id: 6, description: 'BK', amount: 83.96, fundType: 'Online', type: 'expense', date: '2025-08-06' },
-                    { id: 7, description: 'Rikshaw', amount: 40.00, fundType: 'Online', type: 'expense', date: '2025-08-06' },
-                    { id: 8, description: 'zudio', amount: 198.00, fundType: 'Online', type: 'expense', date: '2025-08-08' },
-                    { id: 9, description: 'BK', amount: 376.92, fundType: 'Online', type: 'expense', date: '2025-08-08' },
-                    { id: 10, description: 'BK return', amount: 188.00, fundType: 'Online', type: 'income', date: '2025-08-08' },
-                    { id: 11, description: 'Rikshaw', amount: 40.00, fundType: 'Cash', type: 'expense', date: '2025-08-09' },
-                    { id: 12, description: 'Rakhi', amount: 500.00, fundType: 'Cash', type: 'income', date: '2025-08-09' },
-                    { id: 24, description: 'Rakhi', amount: 500.00, fundType: 'Cash', type: 'income', date: '2025-08-09' },
-                    { id: 13, description: 'movie', amount: 399.00, fundType: 'Online', type: 'expense', date: '2025-08-11' },
-                    { id: 14, description: 'ice cream', amount: 60.00, fundType: 'Online', type: 'expense', date: '2025-08-13' },
-                    { id: 15, description: 'bag', amount: 50.00, fundType: 'Online', type: 'expense', date: '2025-08-15' },
-                    { id: 16, description: 'cake advance', amount: 200.00, fundType: 'Online', type: 'expense', date: '2025-08-15' },
-                    { id: 17, description: 'papa', amount: 1500.00, fundType: 'Online', type: 'income', date: '2025-08-16' },
-                    { id: 18, description: 'cake', amount: 250.00, fundType: 'Online', type: 'expense', date: '2025-08-16' },
-                    { id: 19, description: 'Metro', amount: 60.00, fundType: 'Online', type: 'expense', date: '2025-08-16' },
-                    { id: 20, description: 'Rikshaw', amount: 40.00, fundType: 'Cash', type: 'expense', date: '2025-08-16' },
-                    { id: 21, description: 'sticks', amount: 30.00, fundType: 'Cash', type: 'expense', date: '2025-08-16' },
-                    { id: 22, description: 'Metro', amount: 100.00, fundType: 'Online', type: 'expense', date: '2025-08-22' },
-                    { id: 23, description: 'QD', amount: 300.00, fundType: 'Cash', type: 'expense', date: '2025-08-22' }
-                ]
-            }
-        };
-        // This is the important fix!
-        allData = sampleData;
-        saveData();
-        currentDate = new Date('2025-08-01');
-        renderUI();
-        showMessage("Sample data loaded! You are now viewing August 2025.", false);
-    }
     
     function exportData() {
         if (Object.keys(allData).length === 0) {
@@ -507,7 +464,6 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.dateFilter.value = '';
         renderUI();
     });
-    elements.loadSampleDataBtn.addEventListener('click', loadSampleData);
     elements.exportDataBtn.addEventListener('click', exportData);
     elements.importDataBtn.addEventListener('click', () => elements.importFileInput.click());
     elements.importFileInput.addEventListener('change', handleImport);
