@@ -10,6 +10,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/plugin/customParseFormat.min.js"></script>
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- PWA Manifest and Meta Tags -->
+    <link id="manifest-link" rel="manifest">
+    <meta name="theme-color" content="#f97316">
+    <link rel="apple-touch-icon" href="https://placehold.co/192x192/f97316/ffffff?text=AURA">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AURA">
+
     <style>
         :root {
             --bg-primary: #fff7ed; /* orange-50 */
@@ -77,9 +86,18 @@
             background-color: var(--text-gradient-from);
             color: white;
         }
+        #auth-display-name.hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
+
+    <!-- Welcome Screen -->
+    <div id="welcome-screen" class="fixed inset-0 z-50 items-center justify-center transition-opacity duration-500 ease-in-out opacity-0 pointer-events-none" style="background: linear-gradient(to top, #fef08a, #f97316, #dc2626); display: none;">
+        <h1 id="welcome-message" class="text-5xl font-bold" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">Welcome!</h1>
+    </div>
+
 
     <!-- Auth Screen -->
     <div id="auth-screen" class="min-h-screen flex items-center justify-center bg-gradient-main p-4">
@@ -93,8 +111,11 @@
                     <h2 id="auth-title" class="text-2xl font-bold text-center mb-6 text-stone-900 dark:text-white">Login</h2>
                     <p id="auth-error" class="text-red-500 text-center text-sm mb-4 h-5"></p>
                     <div class="space-y-4">
-                        <input type="email" id="auth-email" placeholder="Email" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-3 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
+                        <input type="text" id="auth-identifier" placeholder="Email or Username" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-3 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
                         <input type="password" id="auth-password" placeholder="Password" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-3 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
+                        <div id="auth-display-name" class="hidden">
+                             <input type="email" id="auth-email" placeholder="Email" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-3 focus:ring-2 focus:ring-orange-500 focus:outline-none">
+                        </div>
                     </div>
                     <div class="mt-6 space-y-2">
                          <button type="submit" id="auth-submit-btn" class="w-full text-white rounded-lg p-3 text-lg font-semibold btn-gradient">Login</button>
@@ -116,15 +137,9 @@
             <header class="flex flex-wrap justify-between items-center gap-4 mb-6">
                 <h1 class="text-4xl font-bold text-gradient">AURA</h1>
                 <div class="flex items-center gap-4">
-                     <button id="theme-toggle-btn" class="p-2 rounded-lg bg-[--bg-secondary] border border-[--border-color]">
-                        <svg id="theme-icon-light" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-                        <svg id="theme-icon-dark" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
-                    </button>
-                    <button id="nav-toggle" class="md:hidden p-2 rounded-lg bg-[--bg-secondary] border border-[--border-color]">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
-                        </svg>
-                    </button>
+                     <button id="header-avatar-btn" class="w-10 h-10 rounded-full border-2 border-[--border-color] overflow-hidden focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        <img id="header-avatar" class="w-full h-full object-cover" src="https://placehold.co/40x40/fed7aa/7c2d12?text=A" alt="Toggle Navigation">
+                     </button>
                 </div>
             </header>
 
@@ -133,11 +148,16 @@
                 <nav id="nav-menu" class="w-full md:w-56 card rounded-xl p-4 flex-shrink-0 hidden md:block">
                     <ul class="space-y-2">
                         <li><a href="#" class="nav-link active block rounded-md px-3 py-2" data-target="dashboard">Dashboard</a></li>
+                        <li><a href="#" class="nav-link block rounded-md px-3 py-2" data-target="profile">Profile</a></li>
                         <li><a href="#" class="nav-link block rounded-md px-3 py-2" data-target="jars">Joint Jars</a></li>
                         <li><a href="#" class="nav-link block rounded-md px-3 py-2" data-target="friends">Friends</a></li>
                         <li><a href="#" class="nav-link block rounded-md px-3 py-2" data-target="data-management">Data</a></li>
                     </ul>
                     <div class="mt-6 pt-4 border-t border-[--border-color]">
+                         <div class="flex items-center gap-2 mb-2">
+                            <img id="nav-avatar" class="w-8 h-8 rounded-full bg-[--bg-tertiary] object-cover" src="https://placehold.co/40x40/fed7aa/7c2d12?text=A" alt="Avatar">
+                            <p id="display-name" class="font-bold text-center"></p>
+                         </div>
                         <p class="text-xs text-[--text-secondary] mb-2">Your User ID:</p>
                         <div class="flex items-center bg-[--bg-primary] p-2 rounded-lg">
                            <input id="user-id-display" type="text" readonly class="text-xs text-[--text-primary] bg-transparent w-full outline-none" value="loading...">
@@ -146,6 +166,15 @@
                            </button>
                         </div>
                          <p id="copy-feedback" class="text-xs text-green-500 mt-1 h-4"></p>
+                         
+                         <div class="flex justify-between items-center mt-4 pt-4 border-t border-[--border-color]">
+                            <p class="text-sm">Toggle Theme</p>
+                            <button id="theme-toggle-btn" class="p-2 rounded-lg bg-[--bg-secondary] border border-[--border-color]">
+                               <svg id="theme-icon-light" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                               <svg id="theme-icon-dark" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                           </button>
+                        </div>
+
                          <button id="sign-out-btn" class="w-full text-left text-sm text-red-500 hover:text-red-700 dark:hover:text-red-400 mt-4 p-2 rounded-md hover:bg-red-100 dark:hover:bg-red-900/50">Sign Out</button>
                     </div>
                 </nav>
@@ -153,95 +182,123 @@
                 <!-- Main Content -->
                 <main class="flex-1">
                     <!-- Dashboard -->
-                    <div id="dashboard" class="page-content">
-                         <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
-                            
-                            <!-- Main Column (Transactions) -->
-                            <div class="lg:col-span-3 space-y-6">
-                                <!-- Month Navigator -->
-                                <div class="flex justify-between items-center card p-2 rounded-xl">
-                                    <button id="prev-month-btn" class="p-2 rounded-md hover:bg-[--bg-tertiary]"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
-                                    <h2 id="month-display" class="text-xl font-bold text-center cursor-pointer" title="Go to a specific date">September 2025</h2>
-                                    <button id="next-month-btn" class="p-2 rounded-md hover:bg-[--bg-tertiary]"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
+                    <div id="dashboard" class="page-content space-y-6">
+                        <!-- Add Transaction Form -->
+                        <div class="card p-4 rounded-xl">
+                            <h2 class="text-xl font-bold mb-4">Add Transaction</h2>
+                            <form id="add-transaction-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="md:col-span-2">
+                                    <label for="add-description" class="block text-sm font-medium text-[--text-secondary] mb-1">Description</label>
+                                    <input type="text" id="add-description" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
                                 </div>
-                                
-                                <!-- Transactions List -->
-                                <div class="card p-4 rounded-xl">
-                                    <div class="flex items-center justify-between mb-4">
-                                        <h2 id="transactions-title" class="text-2xl font-bold">Transactions</h2>
-                                        <button id="back-to-month-btn" class="hidden text-sm text-orange-600 hover:underline">Show Full Month</button>
-                                    </div>
-                                    <div id="transactions-list" class="space-y-4 max-h-[100vh] lg:max-h-[calc(100vh-18rem)] overflow-y-auto pr-2">
-                                       <p id="no-transactions" class="text-[--text-secondary] text-center py-8">No transactions this month.</p>
-                                    </div>
+                                <div>
+                                    <label for="add-amount" class="block text-sm font-medium text-[--text-secondary] mb-1">Amount (₹)</label>
+                                    <input type="number" id="add-amount" step="0.01" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
                                 </div>
-                            </div>
+                                <div>
+                                    <label for="add-date" class="block text-sm font-medium text-[--text-secondary] mb-1">Date</label>
+                                    <input type="text" id="add-date" placeholder="DD/MM/YYYY" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
+                                </div>
+                                 <div>
+                                    <label class="block text-sm font-medium text-[--text-secondary] mb-1">Payment Method</label>
+                                    <select id="add-method" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none"><option value="Online">Online</option><option value="Cash">Cash</option></select>
+                                </div>
+                                 <div>
+                                    <label class="block text-sm font-medium text-[--text-secondary] mb-1">Type</label>
+                                    <select id="add-type" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none"><option value="expense">Expense</option><option value="income">Income</option></select>
+                                </div>
+                                <div class="md:col-span-2">
+                                     <button type="submit" class="w-full text-white rounded-lg p-2 btn-gradient h-10 mt-2">Add Transaction</button>
+                                </div>
+                            </form>
+                            <p id="add-feedback" class="text-xs text-green-500 mt-2 h-4"></p>
+                        </div>
 
-                            <!-- Sidebar Column -->
-                            <div class="lg:col-span-2 space-y-6">
-                                <!-- Add Transaction Form -->
-                                <div class="card p-4 rounded-xl">
-                                    <h2 class="text-xl font-bold mb-4">Add Transaction</h2>
-                                    <form id="add-transaction-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div class="md:col-span-2">
-                                            <label for="add-description" class="block text-sm font-medium text-[--text-secondary] mb-1">Description</label>
-                                            <input type="text" id="add-description" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
-                                        </div>
-                                        <div>
-                                            <label for="add-amount" class="block text-sm font-medium text-[--text-secondary] mb-1">Amount (₹)</label>
-                                            <input type="number" id="add-amount" step="0.01" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
-                                        </div>
-                                        <div>
-                                            <label for="add-date" class="block text-sm font-medium text-[--text-secondary] mb-1">Date</label>
-                                            <input type="text" id="add-date" placeholder="DD/MM/YYYY" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
-                                        </div>
-                                         <div>
-                                            <label class="block text-sm font-medium text-[--text-secondary] mb-1">Payment Method</label>
-                                            <select id="add-method" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none"><option value="Online">Online</option><option value="Cash">Cash</option></select>
-                                        </div>
-                                         <div>
-                                            <label class="block text-sm font-medium text-[--text-secondary] mb-1">Type</label>
-                                            <select id="add-type" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none"><option value="expense">Expense</option><option value="income">Income</option></select>
-                                        </div>
-                                        <div class="md:col-span-2">
-                                             <button type="submit" class="w-full text-white rounded-lg p-2 btn-gradient h-10 mt-2">Add Transaction</button>
-                                        </div>
-                                    </form>
-                                    <p id="add-feedback" class="text-xs text-green-500 mt-2 h-4"></p>
+                        <!-- Summary Boxes -->
+                        <div class="grid grid-cols-2 gap-4">
+                           <div class="card p-4 rounded-xl bg-gradient-main col-span-2">
+                                <h3 class="text-sm text-orange-900 dark:text-orange-100 mb-1">Total Closing Balance</h3>
+                                <p id="closing-balance" class="text-2xl font-bold text-slate-800 dark:text-white">₹0.00</p>
+                           </div>
+                           <div class="card p-4 rounded-xl col-span-2">
+                                <h3 class="text-sm text-[--text-secondary] mb-1">Total Opening Balance</h3>
+                                <p id="opening-balance" class="text-2xl font-bold">₹0.00</p>
+                           </div>
+                           <div class="card p-4 rounded-xl">
+                                <h3 class="text-sm text-[--text-secondary] mb-1">Gains</h3>
+                                <p id="monthly-gains" class="text-2xl font-bold text-green-500">₹0.00</p>
+                           </div>
+                           <div class="card p-4 rounded-xl">
+                                <h3 class="text-sm text-[--text-secondary] mb-1">Expense</h3>
+                                <p id="monthly-expense" class="text-2xl font-bold text-red-500">₹0.00</p>
+                           </div>
+                            <div class="card p-4 rounded-xl">
+                                <h3 class="text-sm text-[--text-secondary] mb-1">Cash Balance</h3>
+                                <p id="cash-balance" class="text-2xl font-bold">₹0.00</p>
+                           </div>
+                            <div class="card p-4 rounded-xl">
+                                <h3 class="text-sm text-[--text-secondary] mb-1">Online Balance</h3>
+                                <p id="online-balance" class="text-2xl font-bold">₹0.00</p>
+                           </div>
+                        </div>
+
+                        <!-- Month Navigator -->
+                        <div class="flex justify-between items-center card p-2 rounded-xl">
+                            <button id="prev-month-btn" class="p-2 rounded-md hover:bg-[--bg-tertiary]"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
+                            <h2 id="month-display" class="text-xl font-bold text-center cursor-pointer" title="Go to a specific date">September 2025</h2>
+                            <button id="next-month-btn" class="p-2 rounded-md hover:bg-[--bg-tertiary]"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
+                        </div>
+                        
+                        <!-- Transactions List -->
+                        <div class="card p-4 rounded-xl">
+                            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
+                                <div class="flex items-center gap-4">
+                                    <h2 id="transactions-title" class="text-2xl font-bold">Transactions</h2>
+                                    <button id="back-to-month-btn" class="hidden text-sm text-orange-600 hover:underline">Show Full Month</button>
                                 </div>
-                                
-                                <!-- Summary Boxes -->
-                                <div class="grid grid-cols-2 gap-4">
-                                   <div class="card p-4 rounded-xl bg-gradient-main col-span-2">
-                                        <h3 class="text-sm text-orange-900 dark:text-orange-100 mb-1">Total Closing Balance</h3>
-                                        <p id="closing-balance" class="text-2xl font-bold text-slate-800 dark:text-white">₹0.00</p>
-                                   </div>
-                                   <div class="card p-4 rounded-xl col-span-2">
-                                        <h3 class="text-sm text-[--text-secondary] mb-1">Total Opening Balance</h3>
-                                        <p id="opening-balance" class="text-2xl font-bold">₹0.00</p>
-                                   </div>
-                                   <div class="card p-4 rounded-xl">
-                                        <h3 class="text-sm text-[--text-secondary] mb-1">Gains</h3>
-                                        <p id="monthly-gains" class="text-2xl font-bold text-green-500">₹0.00</p>
-                                   </div>
-                                   <div class="card p-4 rounded-xl">
-                                        <h3 class="text-sm text-[--text-secondary] mb-1">Expense</h3>
-                                        <p id="monthly-expense" class="text-2xl font-bold text-red-500">₹0.00</p>
-                                   </div>
-                                    <div class="card p-4 rounded-xl">
-                                        <h3 class="text-sm text-[--text-secondary] mb-1">Cash Balance</h3>
-                                        <p id="cash-balance" class="text-2xl font-bold">₹0.00</p>
-                                   </div>
-                                    <div class="card p-4 rounded-xl">
-                                        <h3 class="text-sm text-[--text-secondary] mb-1">Online Balance</h3>
-                                        <p id="online-balance" class="text-2xl font-bold">₹0.00</p>
-                                   </div>
-                                </div>
+                                <input type="text" id="search-transactions" placeholder="Search by name or date..." class="w-full sm:w-64 bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none">
+                            </div>
+                            <div id="transactions-list" class="space-y-4 max-h-[100vh] lg:max-h-[calc(100vh-18rem)] overflow-y-auto pr-2">
+                               <p id="no-transactions" class="text-[--text-secondary] text-center py-8">No transactions this month.</p>
                             </div>
                         </div>
                     </div>
 
                     <!-- Other Pages -->
+                     <div id="profile" class="page-content hidden card p-6 rounded-xl space-y-6">
+                        <h2 class="text-2xl font-bold">My Profile</h2>
+                        
+                        <!-- Profile Details -->
+                        <div class="card p-4 rounded-xl">
+                            <div class="flex flex-col sm:flex-row items-center gap-4">
+                                <div class="relative">
+                                    <img id="profile-avatar" class="w-24 h-24 rounded-full bg-[--bg-tertiary] object-cover" src="https://placehold.co/96x96/fed7aa/7c2d12?text=A" alt="Avatar">
+                                    <label for="avatar-upload" class="absolute bottom-0 right-0 bg-white dark:bg-stone-700 p-1.5 rounded-full cursor-pointer hover:bg-gray-200 border border-[--border-color]">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                    </label>
+                                    <input type="file" id="avatar-upload" class="hidden" accept="image/png, image/jpeg">
+                                </div>
+                                <div class="flex-1 text-center sm:text-left">
+                                    <p class="text-sm text-[--text-secondary]">Email</p>
+                                    <p id="profile-email" class="font-semibold"></p>
+                                    <form id="update-name-form" class="mt-2 flex items-center gap-2">
+                                        <input type="text" id="profile-name" placeholder="Display Name" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
+                                        <button type="submit" class="px-3 py-2 text-sm rounded-lg btn-gradient text-white font-semibold">Save</button>
+                                    </form>
+                                </div>
+                            </div>
+                             <p id="profile-feedback" class="text-sm mt-2 h-5 text-center sm:text-right"></p>
+                        </div>
+
+                        <!-- Change Password -->
+                        <div class="card p-4 rounded-xl">
+                             <h3 class="text-lg font-semibold mb-2">Change Password</h3>
+                             <form id="change-password-form" class="space-y-4">
+                                 <input type="password" id="new-password" placeholder="New Password" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
+                                 <button type="submit" class="w-full md:w-auto px-4 py-2 rounded-lg btn-gradient text-white font-semibold">Update Password</button>
+                             </form>
+                        </div>
+                     </div>
                      <div id="jars" class="page-content hidden card p-6 rounded-xl"><h2 class="text-2xl font-bold">Joint Jars</h2><p class="text-[--text-secondary] mt-4">Feature coming soon! Once you have friends, you can create joint savings jars here.</p></div>
                      <div id="friends" class="page-content hidden card p-6 rounded-xl">
                         <h2 class="text-2xl font-bold mb-4">Friends</h2>
@@ -249,9 +306,9 @@
                             <!-- Add Friend -->
                             <div class="card p-4 rounded-xl">
                                 <h3 class="text-lg font-semibold mb-2">Add a Friend</h3>
-                                <p class="text-sm text-[--text-secondary] mb-3">Add a friend by their User ID to start sharing.</p>
+                                <p class="text-sm text-[--text-secondary] mb-3">Add a friend by their Display Name.</p>
                                 <form id="add-friend-form" class="flex items-center gap-2">
-                                    <input type="text" id="add-friend-id" placeholder="Paste friend's User ID" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
+                                    <input type="text" id="add-friend-name" placeholder="Enter friend's Display Name" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
                                     <button type="submit" class="px-4 py-2 rounded-lg btn-gradient text-white font-semibold flex-shrink-0">Send Request</button>
                                 </form>
                                 <p id="friend-feedback" class="text-sm mt-2 h-5"></p>
@@ -371,6 +428,62 @@
         }
         themeToggleBtn.addEventListener('click', () => setTheme(localStorage.getItem('theme') === 'dark' ? 'light' : 'dark'));
         setTheme(localStorage.getItem('theme') || 'light');
+        
+        // --- PWA SETUP ---
+        function setupPwa() {
+            const manifest = {
+                "name": "AURA - Expense Tracker",
+                "short_name": "AURA",
+                "start_url": ".",
+                "display": "standalone",
+                "background_color": "#fff7ed",
+                "theme_color": "#f97316",
+                "description": "Your Personal & Social Finance Tracker",
+                "icons": [
+                    { "src": "https://placehold.co/192x192/f97316/ffffff?text=AURA", "sizes": "192x192", "type": "image/png" },
+                    { "src": "https://placehold.co/512x512/f97316/ffffff?text=AURA", "sizes": "512x512", "type": "image/png" }
+                ]
+            };
+            const manifestString = JSON.stringify(manifest);
+            const manifestBlob = new Blob([manifestString], {type: 'application/json'});
+            const manifestUrl = URL.createObjectURL(manifestBlob);
+            document.getElementById('manifest-link').setAttribute('href', manifestUrl);
+
+            if ('serviceWorker' in navigator) {
+                const swContent = `
+                    const CACHE_NAME = 'aura-cache-v1';
+                    const urlsToCache = [
+                        '/',
+                        'https://cdn.tailwindcss.com',
+                        'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
+                        'https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js',
+                        'https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/plugin/customParseFormat.min.js',
+                        'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'
+                    ];
+
+                    self.addEventListener('install', event => {
+                        event.waitUntil(
+                            caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
+                        );
+                    });
+
+                    self.addEventListener('fetch', event => {
+                        event.respondWith(
+                            caches.match(event.request).then(response => {
+                                return response || fetch(event.request);
+                            })
+                        );
+                    });
+                `;
+                const swBlob = new Blob([swContent], {type: 'application/javascript'});
+                const swUrl = URL.createObjectURL(swBlob);
+
+                navigator.serviceWorker.register(swUrl)
+                    .then(registration => console.log('Service Worker registered with scope:', registration.scope))
+                    .catch(error => console.log('Service Worker registration failed:', error));
+            }
+        }
+
 
         // --- INITIALIZATION ---
         function initializeSupabase() {
@@ -386,25 +499,60 @@
         
         async function setupAuthObserver() {
             const { data: { session } } = await supabaseClient.auth.getSession();
-            handleUserSession(session);
+            handleUserSession(session, true); // Pass true for initial load
 
             supabaseClient.auth.onAuthStateChange((_event, session) => {
                 handleUserSession(session);
             });
         }
         
-        async function handleUserSession(session) {
+        async function handleUserSession(session, isInitialLoad = false) {
             console.log("DEBUG: Handling user session...");
             const authScreen = document.getElementById('auth-screen');
             const appScreen = document.getElementById('app-screen');
+            const welcomeScreen = document.getElementById('welcome-screen');
+            const welcomeMessage = document.getElementById('welcome-message');
+            
+            const oldUser = user;
             user = session?.user || null;
 
             if (user) {
-                console.log("DEBUG: User found:", user.id);
+                const displayName = user.user_metadata?.display_name || 'No Name';
+                const avatarUrl = user.user_metadata?.avatar_url;
+                
+                // Update UI elements
                 document.getElementById('user-id-display').value = user.id;
-                if (authScreen) authScreen.classList.add('hidden');
-                if (appScreen) appScreen.classList.remove('hidden');
-                console.log("DEBUG: App screen shown. Fetching initial data...");
+                document.getElementById('display-name').textContent = displayName;
+                document.getElementById('profile-email').textContent = user.email;
+                document.getElementById('profile-name').value = displayName;
+                const placeholder = `https://placehold.co/96x96/fed7aa/7c2d12?text=${displayName.charAt(0)}`;
+                [ 'nav-avatar', 'profile-avatar', 'header-avatar' ].forEach(id => {
+                    document.getElementById(id).src = avatarUrl || placeholder;
+                });
+                
+                // Show welcome screen only on fresh login, not on refresh
+                if (!oldUser && user && !isInitialLoad) {
+                    authScreen.classList.add('hidden');
+                    appScreen.classList.add('hidden');
+
+                    welcomeMessage.textContent = `Welcome, ${displayName}!`;
+                    welcomeScreen.style.display = 'flex';
+                    void welcomeScreen.offsetWidth;
+                    welcomeScreen.classList.remove('opacity-0');
+
+                    setTimeout(() => {
+                        welcomeScreen.classList.add('opacity-0');
+                        setTimeout(() => {
+                            welcomeScreen.style.display = 'none';
+                            appScreen.classList.remove('hidden');
+                        }, 500);
+                    }, 2000);
+                } else {
+                    authScreen.classList.add('hidden');
+                    appScreen.classList.remove('hidden');
+                }
+
+                console.log("DEBUG: Fetching initial data...");
                 await fetchInitialTransactions();
                 await fetchFriendships();
                 console.log("DEBUG: Initial data fetched. Listening for changes...");
@@ -416,8 +564,10 @@
                 if (friendshipChannel) friendshipChannel.unsubscribe();
                 transactionsCache = []; 
                 friendshipsCache = [];
-                if (appScreen) appScreen.classList.add('hidden');
-                if (authScreen) authScreen.classList.remove('hidden');
+                appScreen.classList.add('hidden');
+                welcomeScreen.style.display = 'none';
+                welcomeScreen.classList.add('opacity-0');
+                authScreen.classList.remove('hidden');
             }
         }
         
@@ -428,11 +578,25 @@
         const authSubmitBtn = document.getElementById('auth-submit-btn');
         const authToggleText = document.getElementById('auth-toggle-text');
         const authError = document.getElementById('auth-error');
+        const authDisplayNameDiv = document.getElementById('auth-display-name');
+        const authIdentifierInput = document.getElementById('auth-identifier');
+        const authEmailInput = document.getElementById('auth-email');
+
 
         function toggleAuthMode() {
             isLoginMode = !isLoginMode;
             authError.textContent = '';
             authForm.reset();
+            authDisplayNameDiv.classList.toggle('hidden', isLoginMode);
+
+            if(isLoginMode) {
+                authIdentifierInput.placeholder = "Email or Username";
+                authEmailInput.required = false;
+            } else { // Sign up mode
+                authIdentifierInput.placeholder = "Username";
+                authEmailInput.required = true;
+            }
+
             authTitle.textContent = isLoginMode ? 'Login' : 'Sign Up';
             authSubmitBtn.textContent = isLoginMode ? 'Login' : 'Create Account';
             authToggleText.textContent = isLoginMode ? "Don't have an account?" : 'Already have an account?';
@@ -444,20 +608,44 @@
         authForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             authError.textContent = '';
-            const email = document.getElementById('auth-email').value;
-            const password = document.getElementById('auth-password').value;
             
+            const identifier = authIdentifierInput.value;
+            const password = document.getElementById('auth-password').value;
+            const email = authEmailInput.value;
+
             let response;
             authSubmitBtn.disabled = true;
             authSubmitBtn.textContent = isLoginMode ? 'Logging in...' : 'Creating Account...';
 
             try {
                 if (isLoginMode) {
-                    response = await supabaseClient.auth.signInWithPassword({ email, password });
-                } else {
-                    response = await supabaseClient.auth.signUp({ email, password });
+                    let loginEmail = identifier;
+                    // If identifier is not an email, assume it's a username
+                    if (!identifier.includes('@')) {
+                        const { data, error } = await supabaseClient.rpc('get_email_from_username', { p_username: identifier });
+                        if (error || !data) {
+                            throw new Error("User not found with that username.");
+                        }
+                        loginEmail = data;
+                    }
+                    response = await supabaseClient.auth.signInWithPassword({ email: loginEmail, password });
+                } else { // Sign up
+                    response = await supabaseClient.auth.signUp({ 
+                        email, 
+                        password,
+                        options: {
+                            data: {
+                                display_name: identifier // Using the identifier field for username on sign up
+                            }
+                        }
+                    });
                 }
                 if (response.error) throw response.error;
+                 if (!isLoginMode && response.data.user) {
+                    alert('Sign up successful! Please check your email to confirm your account.');
+                    toggleAuthMode();
+                }
+
             } catch (error) {
                 if (error.message.includes('For security purposes')) {
                     authError.textContent = 'You are trying too frequently. Please wait a minute.';
@@ -483,7 +671,7 @@
 
 
         // --- NAVIGATION LOGIC ---
-        const navToggle = document.getElementById('nav-toggle');
+        const navToggle = document.getElementById('header-avatar-btn');
         const navMenu = document.getElementById('nav-menu');
         const navLinks = document.querySelectorAll('.nav-link');
         const pageContents = document.querySelectorAll('.page-content');
@@ -529,6 +717,8 @@
         }
 
         // --- DASHBOARD VIEW LOGIC ---
+        const searchInput = document.getElementById('search-transactions');
+
         async function getStartingBalancesForMonth(monthDate, depth = 0) {
             if (depth > 60) {
                 console.warn("Reached recursion limit for balance calculation. Assuming zero.");
@@ -584,7 +774,7 @@
             
             if (viewScope === 'day') {
                 monthDisplay.textContent = currentDisplayDate.format('D MMMM YYYY');
-                transactionsTitle.textContent = `Transactions for ${currentDisplayDate.format('D MMM')}`;
+                transactionsTitle.textContent = `Transactions`;
                 backToMonthBtn.classList.remove('hidden');
                 transactionsToRender = transactionsCache.filter(tx => dayjs(tx.date, 'DD/MM/YYYY').isSame(currentDisplayDate, 'day'));
             } else { // month view
@@ -592,6 +782,15 @@
                 transactionsTitle.textContent = 'Transactions';
                 backToMonthBtn.classList.add('hidden');
                 transactionsToRender = transactionsCache.filter(tx => dayjs(tx.date, 'DD/MM/YYYY').isSame(currentDisplayDate, 'month'));
+            }
+
+            // Apply search filter
+            const searchTerm = searchInput.value.toLowerCase();
+            if (searchTerm) {
+                transactionsToRender = transactionsToRender.filter(tx => 
+                    tx.description.toLowerCase().includes(searchTerm) ||
+                    tx.date.includes(searchTerm)
+                );
             }
 
             const monthForSummary = currentDisplayDate.startOf('month');
@@ -625,6 +824,8 @@
             renderTransactions(transactionsToRender);
             console.log("DEBUG: Dashboard view update complete.");
         }
+        
+        searchInput.addEventListener('input', updateDashboardView);
 
         document.getElementById('prev-month-btn').addEventListener('click', () => { 
             currentDisplayDate = viewScope === 'month' ? currentDisplayDate.subtract(1, 'month') : currentDisplayDate.subtract(1, 'day');
@@ -636,13 +837,14 @@
         });
         document.getElementById('back-to-month-btn').addEventListener('click', () => {
             viewScope = 'month';
+            searchInput.value = '';
             updateDashboardView();
         });
 
         // --- RENDERING LOGIC --- 
         function renderTransactions(transactions) {
             const listEl = document.getElementById('transactions-list');
-            listEl.innerHTML = transactions.length === 0 ? `<p id="no-transactions" class="text-[--text-secondary] text-center py-8">No transactions for this selection.</p>` : '';
+            listEl.innerHTML = transactions.length === 0 ? `<p id="no-transactions" class="text-[--text-secondary] text-center py-8">No matching transactions found.</p>` : '';
             if (transactions.length === 0) return;
             
             const grouped = transactions.reduce((acc, tx) => { (acc[tx.date] = acc[tx.date] || []).push(tx); return acc; }, {});
@@ -792,6 +994,7 @@
             e.preventDefault();
             currentDisplayDate = dayjs(datePickerInput.value);
             viewScope = 'day';
+            searchInput.value = '';
             updateDashboardView();
             datePickerModal.style.display = 'none';
         });
@@ -907,14 +1110,16 @@
         
         async function fetchFriendships() {
             if (!user) return;
-            const { data, error } = await supabaseClient
-                .from('friendships')
-                .select('*');
+
+             const { data, error } = await supabaseClient.rpc('get_friendships_with_names');
             
             if(error) {
                 console.error('Error fetching friendships:', error);
-                if (error.message.includes('relation "public.friendships" does not exist')) {
-                    document.getElementById('friends-list').innerHTML = '<p class="text-sm text-red-500">Error: The friendships table is missing. Please run the social features setup script in your Supabase SQL Editor.</p>';
+                 if (error.message.includes('permission denied for table users')) {
+                     document.getElementById('friends-list').innerHTML = '<p class="text-sm text-red-500">Error: Database permissions are not set correctly. Please run the latest SQL script from your Supabase editor to fix this.</p>';
+                 }
+                else if (error.message.includes('function public.get_friendships_with_names() does not exist')) {
+                    document.getElementById('friends-list').innerHTML = '<p class="text-sm text-red-500">Error: The database functions for friends are missing. Please run the social features update script in your Supabase SQL Editor.</p>';
                 }
                 return;
             }
@@ -948,11 +1153,11 @@
             } else {
                 friendsListEl.innerHTML = '';
                 friends.forEach(f => {
-                    const friendId = f.requester_id === user.id ? f.addressee_id : f.requester_id;
+                    const friendName = f.requester_id === user.id ? f.addressee_name : f.requester_name;
                     const el = document.createElement('div');
                     el.className = 'flex items-center justify-between card p-2 rounded-lg';
                     el.innerHTML = `
-                        <p class="text-sm truncate" title="${friendId}">${friendId.substring(0, 16)}...</p>
+                        <p class="font-semibold" >${friendName}</p>
                         <button data-friendship-id="${f.id}" class="remove-friend-btn px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200">Remove</button>
                     `;
                     friendsListEl.appendChild(el);
@@ -969,8 +1174,8 @@
                     el.className = 'flex items-center justify-between card p-2 rounded-lg';
                     el.innerHTML = `
                         <div>
-                            <p class="text-sm font-semibold">New Request</p>
-                            <p class="text-xs text-[--text-secondary] truncate" title="${req.requester_id}">${req.requester_id.substring(0,16)}...</p>
+                            <p class="text-sm font-semibold">${req.requester_name}</p>
+                            <p class="text-xs text-[--text-secondary]">Wants to be your friend.</p>
                         </div>
                         <div class="flex gap-2">
                            <button data-friendship-id="${req.id}" class="accept-request-btn px-2 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200">Accept</button>
@@ -985,16 +1190,30 @@
         async function handleAddFriend(e) {
             e.preventDefault();
             if (!user) return;
-            const friendId = document.getElementById('add-friend-id').value.trim();
-            if (!friendId || friendId === user.id) {
-                friendFeedback.textContent = 'Please enter a valid User ID.';
+            const friendName = document.getElementById('add-friend-name').value.trim();
+            if (!friendName) {
+                friendFeedback.textContent = 'Please enter a name.';
                 friendFeedback.className = 'text-sm mt-2 h-5 text-red-500';
                 return;
             }
             
+            const { data: friend, error: searchError } = await supabaseClient.rpc('search_user_by_name', { search_name: friendName });
+
+            if (searchError || !friend) {
+                friendFeedback.textContent = `Could not find a user named "${friendName}".`;
+                friendFeedback.className = 'text-sm mt-2 h-5 text-red-500';
+                return;
+            }
+
+            if (friend.id === user.id) {
+                friendFeedback.textContent = "You can't add yourself as a friend.";
+                friendFeedback.className = 'text-sm mt-2 h-5 text-red-500';
+                return;
+            }
+
             const { error } = await supabaseClient
                 .from('friendships')
-                .insert({ requester_id: user.id, addressee_id: friendId });
+                .insert({ requester_id: user.id, addressee_id: friend.id });
             
             if (error) {
                  if (error.code === '23505') { // unique constraint violation
@@ -1047,8 +1266,96 @@
             if (e.target.classList.contains('remove-friend-btn')) handleRemoveFriend(e);
         });
 
+        // --- PROFILE PAGE LOGIC ---
+        const avatarUploadInput = document.getElementById('avatar-upload');
+        const updateNameForm = document.getElementById('update-name-form');
+        const changePasswordForm = document.getElementById('change-password-form');
+        const profileFeedback = document.getElementById('profile-feedback');
+        
+        async function handleAvatarUpload(e) {
+            if (!user || !e.target.files || e.target.files.length === 0) return;
+            const file = e.target.files[0];
+            const fileExt = file.name.split('.').pop();
+            const filePath = `${user.id}/${Date.now()}.${fileExt}`;
+
+            profileFeedback.textContent = 'Uploading...';
+            profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right text-orange-500';
+
+            const { error: uploadError } = await supabaseClient.storage.from('profile-pictures').upload(filePath, file);
+
+            if (uploadError) {
+                console.error('Avatar upload error:', uploadError);
+                profileFeedback.textContent = 'Upload failed.';
+                profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right text-red-500';
+                return;
+            }
+
+            const { data: { publicUrl } } = supabaseClient.storage.from('profile-pictures').getPublicUrl(filePath);
+
+            const { error: updateUserError } = await supabaseClient.auth.updateUser({
+                data: { avatar_url: publicUrl }
+            });
+
+            if (updateUserError) {
+                 profileFeedback.textContent = 'Failed to update profile.';
+                 profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right text-red-500';
+            } else {
+                 profileFeedback.textContent = 'Avatar updated!';
+                 profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right text-green-500';
+                 document.getElementById('profile-avatar').src = publicUrl;
+                 document.getElementById('nav-avatar').src = publicUrl;
+                 document.getElementById('header-avatar').src = publicUrl;
+            }
+             setTimeout(() => profileFeedback.textContent = '', 3000);
+        }
+
+        async function handleUpdateName(e) {
+            e.preventDefault();
+            const newName = document.getElementById('profile-name').value;
+            if (!newName || newName === user.user_metadata.display_name) return;
+
+             const { error } = await supabaseClient.auth.updateUser({
+                data: { display_name: newName }
+            });
+            if (error) {
+                profileFeedback.textContent = `Error: ${error.message}`;
+                profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right text-red-500';
+            } else {
+                profileFeedback.textContent = 'Display name updated!';
+                profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right text-green-500';
+                document.getElementById('display-name').textContent = newName;
+            }
+            setTimeout(() => profileFeedback.textContent = '', 3000);
+        }
+
+        async function handleChangePassword(e) {
+             e.preventDefault();
+             const newPassword = document.getElementById('new-password').value;
+             if (!newPassword) return;
+
+             const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
+             
+             if (error) {
+                profileFeedback.textContent = `Error: ${error.message}`;
+                profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right text-red-500';
+             } else {
+                profileFeedback.textContent = 'Password updated successfully!';
+                profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right text-green-500';
+                changePasswordForm.reset();
+             }
+             setTimeout(() => profileFeedback.textContent = '', 3000);
+        }
+
+        avatarUploadInput.addEventListener('change', handleAvatarUpload);
+        updateNameForm.addEventListener('submit', handleUpdateName);
+        changePasswordForm.addEventListener('submit', handleChangePassword);
+
+
         // --- STARTUP ---
-        document.addEventListener('DOMContentLoaded', initializeSupabase);
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeSupabase();
+            setupPwa();
+        });
     </script>
 </body>
 </html>
