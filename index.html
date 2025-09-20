@@ -130,7 +130,7 @@
 
             <div class="flex flex-col md:flex-row gap-6">
                 <!-- Navigation -->
-                <nav id="nav-menu" class="w-full md-w-56 card rounded-xl p-4 flex-shrink-0 hidden md:block">
+                <nav id="nav-menu" class="w-full md:w-56 card rounded-xl p-4 flex-shrink-0 hidden md:block">
                     <ul class="space-y-2">
                         <li><a href="#" class="nav-link active block rounded-md px-3 py-2" data-target="dashboard">Dashboard</a></li>
                         <li><a href="#" class="nav-link block rounded-md px-3 py-2" data-target="jars">Joint Jars</a></li>
@@ -154,84 +154,126 @@
                 <main class="flex-1">
                     <!-- Dashboard -->
                     <div id="dashboard" class="page-content">
-                        <!-- Add Transaction Form -->
-                        <div class="card p-4 rounded-xl mb-6">
-                            <h2 class="text-xl font-bold mb-4">Add Transaction</h2>
-                            <form id="add-transaction-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="md:col-span-2">
-                                    <label for="add-description" class="block text-sm font-medium text-[--text-secondary] mb-1">Description</label>
-                                    <input type="text" id="add-description" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
+                         <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                            
+                            <!-- Main Column (Transactions) -->
+                            <div class="lg:col-span-3 space-y-6">
+                                <!-- Month Navigator -->
+                                <div class="flex justify-between items-center card p-2 rounded-xl">
+                                    <button id="prev-month-btn" class="p-2 rounded-md hover:bg-[--bg-tertiary]"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
+                                    <h2 id="month-display" class="text-xl font-bold text-center cursor-pointer" title="Go to a specific date">September 2025</h2>
+                                    <button id="next-month-btn" class="p-2 rounded-md hover:bg-[--bg-tertiary]"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
                                 </div>
-                                <div>
-                                    <label for="add-amount" class="block text-sm font-medium text-[--text-secondary] mb-1">Amount (₹)</label>
-                                    <input type="number" id="add-amount" step="0.01" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
+                                
+                                <!-- Transactions List -->
+                                <div class="card p-4 rounded-xl">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <h2 id="transactions-title" class="text-2xl font-bold">Transactions</h2>
+                                        <button id="back-to-month-btn" class="hidden text-sm text-orange-600 hover:underline">Show Full Month</button>
+                                    </div>
+                                    <div id="transactions-list" class="space-y-4 max-h-[100vh] lg:max-h-[calc(100vh-18rem)] overflow-y-auto pr-2">
+                                       <p id="no-transactions" class="text-[--text-secondary] text-center py-8">No transactions this month.</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <label for="add-date" class="block text-sm font-medium text-[--text-secondary] mb-1">Date</label>
-                                    <input type="text" id="add-date" placeholder="DD/MM/YYYY" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
-                                </div>
-                                 <div>
-                                    <label class="block text-sm font-medium text-[--text-secondary] mb-1">Payment Method</label>
-                                    <select id="add-method" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none"><option value="Online">Online</option><option value="Cash">Cash</option></select>
-                                </div>
-                                 <div>
-                                    <label class="block text-sm font-medium text-[--text-secondary] mb-1">Type</label>
-                                    <select id="add-type" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none"><option value="expense">Expense</option><option value="income">Income</option></select>
-                                </div>
-                                <div class="md:col-span-2">
-                                     <button type="submit" class="w-full text-white rounded-lg p-2 btn-gradient h-10 mt-2">Add Transaction</button>
-                                </div>
-                            </form>
-                            <p id="add-feedback" class="text-xs text-green-500 mt-2 h-4"></p>
-                        </div>
+                            </div>
 
-                        <!-- Month Navigator -->
-                        <div class="flex justify-between items-center mb-4 card p-2 rounded-xl">
-                            <button id="prev-month-btn" class="p-2 rounded-md hover:bg-[--bg-tertiary]"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
-                            <h2 id="month-display" class="text-xl font-bold text-center cursor-pointer" title="Go to a specific date">September 2025</h2>
-                            <button id="next-month-btn" class="p-2 rounded-md hover:bg-[--bg-tertiary]"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
-                        </div>
-                        
-                        <!-- Summary Boxes -->
-                        <div class="grid grid-cols-2 gap-4 mb-6">
-                           <div class="card p-4 rounded-xl bg-gradient-main">
-                                <h3 class="text-sm text-orange-900 dark:text-orange-100 mb-1">Total Opening Balance</h3>
-                                <p id="opening-balance" class="text-2xl font-bold text-slate-800 dark:text-white">₹0.00</p>
-                           </div>
-                           <div class="card p-4 rounded-xl bg-gradient-main">
-                                <h3 class="text-sm text-orange-900 dark:text-orange-100 mb-1">Total Closing Balance</h3>
-                                <p id="closing-balance" class="text-2xl font-bold text-slate-800 dark:text-white">₹0.00</p>
-                           </div>
-                           <div class="card p-4 rounded-xl">
-                                <h3 class="text-sm text-[--text-secondary] mb-1">Gains</h3>
-                                <p id="monthly-gains" class="text-2xl font-bold text-green-500">₹0.00</p>
-                           </div>
-                           <div class="card p-4 rounded-xl">
-                                <h3 class="text-sm text-[--text-secondary] mb-1">Expense</h3>
-                                <p id="monthly-expense" class="text-2xl font-bold text-red-500">₹0.00</p>
-                           </div>
-                            <div class="card p-4 rounded-xl">
-                                <h3 class="text-sm text-[--text-secondary] mb-1">Cash Balance</h3>
-                                <p id="cash-balance" class="text-2xl font-bold">₹0.00</p>
-                           </div>
-                            <div class="card p-4 rounded-xl">
-                                <h3 class="text-sm text-[--text-secondary] mb-1">Online Balance</h3>
-                                <p id="online-balance" class="text-2xl font-bold">₹0.00</p>
-                           </div>
-                        </div>
-                        
-                        <div class="flex items-center justify-between">
-                            <h2 id="transactions-title" class="text-2xl font-bold mb-4">Transactions This Month</h2>
-                            <button id="back-to-month-btn" class="hidden text-sm text-orange-600 hover:underline mb-4">Show Full Month</button>
-                        </div>
-                        <div id="transactions-list" class="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
-                           <p id="no-transactions" class="text-[--text-secondary] text-center py-8">No transactions this month.</p>
+                            <!-- Sidebar Column -->
+                            <div class="lg:col-span-2 space-y-6">
+                                <!-- Add Transaction Form -->
+                                <div class="card p-4 rounded-xl">
+                                    <h2 class="text-xl font-bold mb-4">Add Transaction</h2>
+                                    <form id="add-transaction-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="md:col-span-2">
+                                            <label for="add-description" class="block text-sm font-medium text-[--text-secondary] mb-1">Description</label>
+                                            <input type="text" id="add-description" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
+                                        </div>
+                                        <div>
+                                            <label for="add-amount" class="block text-sm font-medium text-[--text-secondary] mb-1">Amount (₹)</label>
+                                            <input type="number" id="add-amount" step="0.01" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
+                                        </div>
+                                        <div>
+                                            <label for="add-date" class="block text-sm font-medium text-[--text-secondary] mb-1">Date</label>
+                                            <input type="text" id="add-date" placeholder="DD/MM/YYYY" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
+                                        </div>
+                                         <div>
+                                            <label class="block text-sm font-medium text-[--text-secondary] mb-1">Payment Method</label>
+                                            <select id="add-method" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none"><option value="Online">Online</option><option value="Cash">Cash</option></select>
+                                        </div>
+                                         <div>
+                                            <label class="block text-sm font-medium text-[--text-secondary] mb-1">Type</label>
+                                            <select id="add-type" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none"><option value="expense">Expense</option><option value="income">Income</option></select>
+                                        </div>
+                                        <div class="md:col-span-2">
+                                             <button type="submit" class="w-full text-white rounded-lg p-2 btn-gradient h-10 mt-2">Add Transaction</button>
+                                        </div>
+                                    </form>
+                                    <p id="add-feedback" class="text-xs text-green-500 mt-2 h-4"></p>
+                                </div>
+                                
+                                <!-- Summary Boxes -->
+                                <div class="grid grid-cols-2 gap-4">
+                                   <div class="card p-4 rounded-xl bg-gradient-main col-span-2">
+                                        <h3 class="text-sm text-orange-900 dark:text-orange-100 mb-1">Total Closing Balance</h3>
+                                        <p id="closing-balance" class="text-2xl font-bold text-slate-800 dark:text-white">₹0.00</p>
+                                   </div>
+                                   <div class="card p-4 rounded-xl col-span-2">
+                                        <h3 class="text-sm text-[--text-secondary] mb-1">Total Opening Balance</h3>
+                                        <p id="opening-balance" class="text-2xl font-bold">₹0.00</p>
+                                   </div>
+                                   <div class="card p-4 rounded-xl">
+                                        <h3 class="text-sm text-[--text-secondary] mb-1">Gains</h3>
+                                        <p id="monthly-gains" class="text-2xl font-bold text-green-500">₹0.00</p>
+                                   </div>
+                                   <div class="card p-4 rounded-xl">
+                                        <h3 class="text-sm text-[--text-secondary] mb-1">Expense</h3>
+                                        <p id="monthly-expense" class="text-2xl font-bold text-red-500">₹0.00</p>
+                                   </div>
+                                    <div class="card p-4 rounded-xl">
+                                        <h3 class="text-sm text-[--text-secondary] mb-1">Cash Balance</h3>
+                                        <p id="cash-balance" class="text-2xl font-bold">₹0.00</p>
+                                   </div>
+                                    <div class="card p-4 rounded-xl">
+                                        <h3 class="text-sm text-[--text-secondary] mb-1">Online Balance</h3>
+                                        <p id="online-balance" class="text-2xl font-bold">₹0.00</p>
+                                   </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Other Pages -->
-                     <div id="jars" class="page-content hidden card p-6 rounded-xl"><h2 class="text-2xl font-bold">Joint Jars</h2><p class="text-[--text-secondary] mt-4">Feature coming soon!</p></div>
-                    <div id="friends" class="page-content hidden card p-6 rounded-xl"><h2 class="text-2xl font-bold">Friends</h2><p class="text-[--text-secondary] mt-4">Feature coming soon!</p></div>
+                     <div id="jars" class="page-content hidden card p-6 rounded-xl"><h2 class="text-2xl font-bold">Joint Jars</h2><p class="text-[--text-secondary] mt-4">Feature coming soon! Once you have friends, you can create joint savings jars here.</p></div>
+                     <div id="friends" class="page-content hidden card p-6 rounded-xl">
+                        <h2 class="text-2xl font-bold mb-4">Friends</h2>
+                        <div class="space-y-6">
+                            <!-- Add Friend -->
+                            <div class="card p-4 rounded-xl">
+                                <h3 class="text-lg font-semibold mb-2">Add a Friend</h3>
+                                <p class="text-sm text-[--text-secondary] mb-3">Add a friend by their User ID to start sharing.</p>
+                                <form id="add-friend-form" class="flex items-center gap-2">
+                                    <input type="text" id="add-friend-id" placeholder="Paste friend's User ID" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
+                                    <button type="submit" class="px-4 py-2 rounded-lg btn-gradient text-white font-semibold flex-shrink-0">Send Request</button>
+                                </form>
+                                <p id="friend-feedback" class="text-sm mt-2 h-5"></p>
+                            </div>
+
+                            <!-- Incoming Requests -->
+                            <div>
+                                <h3 class="text-lg font-semibold mb-2">Incoming Requests</h3>
+                                <div id="incoming-requests-list" class="space-y-2">
+                                    <p class="text-sm text-[--text-secondary]">No new friend requests.</p>
+                                </div>
+                            </div>
+
+                             <!-- My Friends -->
+                            <div>
+                                <h3 class="text-lg font-semibold mb-2">My Friends</h3>
+                                <div id="friends-list" class="space-y-2">
+                                     <p class="text-sm text-[--text-secondary]">You haven't added any friends yet.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div id="data-management" class="page-content hidden card p-6 rounded-xl">
                         <h2 class="text-2xl font-bold mb-4">Data Management</h2>
                         <div class="space-y-6">
@@ -306,8 +348,9 @@
         const supabaseUrl = 'https://ahdsjmblyfklicnjlndt.supabase.co'; 
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoZHNqbWJseWZrbGljbmpsbmR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzODIzMjIsImV4cCI6MjA3Mzk1ODMyMn0.jyoK7mllXzd6NXh5bJOIoJVT3MTyzqbu7M5YKQKpyMo';
         
-        let supabaseClient, user = null, transactionChannel = null;
+        let supabaseClient, user = null, transactionChannel = null, friendshipChannel = null;
         let transactionsCache = [];
+        let friendshipsCache = [];
         let currentDisplayDate = dayjs();
         let isLoginMode = true;
         let viewScope = 'month'; // 'month' or 'day'
@@ -361,14 +404,18 @@
                 document.getElementById('user-id-display').value = user.id;
                 if (authScreen) authScreen.classList.add('hidden');
                 if (appScreen) appScreen.classList.remove('hidden');
-                console.log("DEBUG: App screen shown. Fetching initial transactions...");
+                console.log("DEBUG: App screen shown. Fetching initial data...");
                 await fetchInitialTransactions();
-                console.log("DEBUG: Initial transactions fetched. Listening for changes...");
+                await fetchFriendships();
+                console.log("DEBUG: Initial data fetched. Listening for changes...");
                 listenToTransactions();
+                listenToFriendships();
             } else {
                 console.log("DEBUG: No user session found.");
                 if (transactionChannel) transactionChannel.unsubscribe();
+                if (friendshipChannel) friendshipChannel.unsubscribe();
                 transactionsCache = []; 
+                friendshipsCache = [];
                 if (appScreen) appScreen.classList.add('hidden');
                 if (authScreen) authScreen.classList.remove('hidden');
             }
@@ -425,6 +472,14 @@
         });
         
         document.getElementById('sign-out-btn').addEventListener('click', () => supabaseClient.auth.signOut());
+        document.getElementById('copy-user-id').addEventListener('click', () => {
+             const userIdInput = document.getElementById('user-id-display');
+             userIdInput.select();
+             document.execCommand('copy');
+             const feedback = document.getElementById('copy-feedback');
+             feedback.textContent = 'Copied!';
+             setTimeout(() => feedback.textContent = '', 2000);
+        });
 
 
         // --- NAVIGATION LOGIC ---
@@ -534,7 +589,7 @@
                 transactionsToRender = transactionsCache.filter(tx => dayjs(tx.date, 'DD/MM/YYYY').isSame(currentDisplayDate, 'day'));
             } else { // month view
                 monthDisplay.textContent = currentDisplayDate.format('MMMM YYYY');
-                transactionsTitle.textContent = 'Transactions This Month';
+                transactionsTitle.textContent = 'Transactions';
                 backToMonthBtn.classList.add('hidden');
                 transactionsToRender = transactionsCache.filter(tx => dayjs(tx.date, 'DD/MM/YYYY').isSame(currentDisplayDate, 'month'));
             }
@@ -846,6 +901,152 @@
         importBtn.addEventListener('click', handleImport);
         exportBtn.addEventListener('click', handleExport);
         
+        // --- FRIENDS LOGIC ---
+        const addFriendForm = document.getElementById('add-friend-form');
+        const friendFeedback = document.getElementById('friend-feedback');
+        
+        async function fetchFriendships() {
+            if (!user) return;
+            const { data, error } = await supabaseClient
+                .from('friendships')
+                .select('*');
+            
+            if(error) {
+                console.error('Error fetching friendships:', error);
+                if (error.message.includes('relation "public.friendships" does not exist')) {
+                    document.getElementById('friends-list').innerHTML = '<p class="text-sm text-red-500">Error: The friendships table is missing. Please run the social features setup script in your Supabase SQL Editor.</p>';
+                }
+                return;
+            }
+            friendshipsCache = data || [];
+            renderFriends();
+        }
+        
+        function listenToFriendships() {
+            if (friendshipChannel) friendshipChannel.unsubscribe();
+            if (!user) return;
+            
+            friendshipChannel = supabaseClient.channel('public:friendships')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'friendships' }, 
+                (payload) => {
+                    fetchFriendships();
+                })
+                .subscribe();
+        }
+
+        function renderFriends() {
+            if (!user) return;
+            const friendsListEl = document.getElementById('friends-list');
+            const incomingRequestsListEl = document.getElementById('incoming-requests-list');
+
+            const friends = friendshipsCache.filter(f => f.status === 'accepted');
+            const incomingRequests = friendshipsCache.filter(f => f.status === 'pending' && f.addressee_id === user.id);
+            
+            // Render Friends
+            if (friends.length === 0) {
+                friendsListEl.innerHTML = '<p class="text-sm text-[--text-secondary]">You haven\'t added any friends yet.</p>';
+            } else {
+                friendsListEl.innerHTML = '';
+                friends.forEach(f => {
+                    const friendId = f.requester_id === user.id ? f.addressee_id : f.requester_id;
+                    const el = document.createElement('div');
+                    el.className = 'flex items-center justify-between card p-2 rounded-lg';
+                    el.innerHTML = `
+                        <p class="text-sm truncate" title="${friendId}">${friendId.substring(0, 16)}...</p>
+                        <button data-friendship-id="${f.id}" class="remove-friend-btn px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200">Remove</button>
+                    `;
+                    friendsListEl.appendChild(el);
+                });
+            }
+
+            // Render Incoming Requests
+            if (incomingRequests.length === 0) {
+                incomingRequestsListEl.innerHTML = '<p class="text-sm text-[--text-secondary]">No new friend requests.</p>';
+            } else {
+                incomingRequestsListEl.innerHTML = '';
+                incomingRequests.forEach(req => {
+                    const el = document.createElement('div');
+                    el.className = 'flex items-center justify-between card p-2 rounded-lg';
+                    el.innerHTML = `
+                        <div>
+                            <p class="text-sm font-semibold">New Request</p>
+                            <p class="text-xs text-[--text-secondary] truncate" title="${req.requester_id}">${req.requester_id.substring(0,16)}...</p>
+                        </div>
+                        <div class="flex gap-2">
+                           <button data-friendship-id="${req.id}" class="accept-request-btn px-2 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200">Accept</button>
+                           <button data-friendship-id="${req.id}" class="decline-request-btn px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200">Decline</button>
+                        </div>
+                    `;
+                    incomingRequestsListEl.appendChild(el);
+                });
+            }
+        }
+        
+        async function handleAddFriend(e) {
+            e.preventDefault();
+            if (!user) return;
+            const friendId = document.getElementById('add-friend-id').value.trim();
+            if (!friendId || friendId === user.id) {
+                friendFeedback.textContent = 'Please enter a valid User ID.';
+                friendFeedback.className = 'text-sm mt-2 h-5 text-red-500';
+                return;
+            }
+            
+            const { error } = await supabaseClient
+                .from('friendships')
+                .insert({ requester_id: user.id, addressee_id: friendId });
+            
+            if (error) {
+                 if (error.code === '23505') { // unique constraint violation
+                    friendFeedback.textContent = 'You have already sent a request to this user.';
+                 } else {
+                    friendFeedback.textContent = `Error: ${error.message}`;
+                 }
+                 friendFeedback.className = 'text-sm mt-2 h-5 text-red-500';
+            } else {
+                friendFeedback.textContent = 'Friend request sent!';
+                friendFeedback.className = 'text-sm mt-2 h-5 text-green-500';
+                addFriendForm.reset();
+            }
+            setTimeout(() => friendFeedback.textContent = '', 3000);
+        }
+
+        async function handleRequestAction(e, newStatus) {
+            if (!user || !e.target.dataset.friendshipId) return;
+            const friendshipId = e.target.dataset.friendshipId;
+
+            const { error } = await supabaseClient
+                .from('friendships')
+                .update({ status: newStatus })
+                .eq('id', friendshipId)
+                .eq('addressee_id', user.id); // Security check
+            
+            if (error) {
+                console.error(`Error ${newStatus === 'accepted' ? 'accepting' : 'declining'} request:`, error);
+                alert('Could not process request.');
+            }
+        }
+        
+        async function handleRemoveFriend(e) {
+             if (!user || !e.target.dataset.friendshipId) return;
+             const friendshipId = e.target.dataset.friendshipId;
+             const { error } = await supabaseClient
+                .from('friendships')
+                .delete()
+                .eq('id', friendshipId);
+             if (error) {
+                console.error('Error removing friend:', error);
+                alert('Could not remove friend.');
+             }
+        }
+
+        addFriendForm.addEventListener('submit', handleAddFriend);
+        document.getElementById('friends').addEventListener('click', (e) => {
+            if (e.target.classList.contains('accept-request-btn')) handleRequestAction(e, 'accepted');
+            if (e.target.classList.contains('decline-request-btn')) handleRequestAction(e, 'declined');
+            if (e.target.classList.contains('remove-friend-btn')) handleRemoveFriend(e);
+        });
+
         // --- STARTUP ---
         document.addEventListener('DOMContentLoaded', initializeSupabase);
     </script>
