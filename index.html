@@ -351,17 +351,22 @@
         }
         
         async function handleUserSession(session) {
+            console.log("DEBUG: Handling user session...");
             const authScreen = document.getElementById('auth-screen');
             const appScreen = document.getElementById('app-screen');
             user = session?.user || null;
 
             if (user) {
+                console.log("DEBUG: User found:", user.id);
                 document.getElementById('user-id-display').value = user.id;
                 if (authScreen) authScreen.classList.add('hidden');
                 if (appScreen) appScreen.classList.remove('hidden');
+                console.log("DEBUG: App screen shown. Fetching initial transactions...");
                 await fetchInitialTransactions();
+                console.log("DEBUG: Initial transactions fetched. Listening for changes...");
                 listenToTransactions();
             } else {
+                console.log("DEBUG: No user session found.");
                 if (transactionChannel) transactionChannel.unsubscribe();
                 transactionsCache = []; 
                 if (appScreen) appScreen.classList.add('hidden');
@@ -442,6 +447,7 @@
         // --- DATA LOGIC ---
         async function fetchInitialTransactions() {
             if (!user) return;
+            console.log("DEBUG: Fetching transactions from Supabase...");
             const { data, error } = await supabaseClient
                 .from('transactions')
                 .select('*')
@@ -450,7 +456,8 @@
                 console.error("Error fetching initial transactions:", error);
             } else {
                 transactionsCache = data || [];
-                updateDashboardView();
+                console.log(`DEBUG: Found ${transactionsCache.length} transactions. Updating dashboard view...`);
+                await updateDashboardView();
             }
         }
 
@@ -478,7 +485,7 @@
 
             const { data, error } = await supabaseClient
                 .from('monthly_summaries')
-                .select('"startingCash", "startingOnline"')
+                .select('startingCash, startingOnline')
                 .eq('user_id', user.id)
                 .eq('month_key', monthKey)
                 .single();
@@ -514,6 +521,7 @@
         
         async function updateDashboardView() {
             if (!user) return; 
+            console.log("DEBUG: Updating dashboard view...");
             const transactionsTitle = document.getElementById('transactions-title');
             const backToMonthBtn = document.getElementById('back-to-month-btn');
 
@@ -533,6 +541,7 @@
 
             const monthForSummary = currentDisplayDate.startOf('month');
             const startBalances = await getStartingBalancesForMonth(monthForSummary);
+            console.log("DEBUG: Calculated start balances:", startBalances);
 
             const monthlyTransactions = transactionsCache.filter(tx => dayjs(tx.date, 'DD/MM/YYYY').isSame(currentDisplayDate, 'month'));
             
@@ -556,8 +565,10 @@
             document.getElementById('cash-balance').textContent = `₹${cashBalance.toFixed(2)}`;
             document.getElementById('online-balance').textContent = `₹${onlineBalance.toFixed(2)}`;
             document.getElementById('closing-balance').textContent = `₹${(cashBalance + onlineBalance).toFixed(2)}`;
+            console.log("DEBUG: Balances updated in DOM.");
 
             renderTransactions(transactionsToRender);
+            console.log("DEBUG: Dashboard view update complete.");
         }
 
         document.getElementById('prev-month-btn').addEventListener('click', () => { 
@@ -840,4 +851,5 @@
     </script>
 </body>
 </html>
+
 
