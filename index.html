@@ -15,7 +15,7 @@
     <!-- PWA Manifest and Meta Tags -->
     <link id="manifest-link" rel="manifest">
     <meta name="theme-color" content="#f97316">
-    <link rel="apple-touch-icon" href="https://placehold.co/192x192/f97316/ffffff?text=AURA">
+    <link id="apple-touch-icon" rel="apple-touch-icon" href="https://i.pinimg.com/1200x/5f/3b/eb/5f3beb777df379dd4b9bb4a85b3ac501.jpg">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="AURA">
@@ -92,6 +92,24 @@
         }
         .font-cursive {
             font-family: 'Playfair Display', serif;
+        }
+        /* Chat bubble styles */
+        .chat-bubble {
+            max-width: 75%;
+            padding: 8px 12px;
+            border-radius: 18px;
+        }
+        .chat-bubble-sent {
+            background-color: #fb923c; /* orange-400 */
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        .chat-bubble-received {
+            background-color: var(--bg-tertiary);
+            border-bottom-left-radius: 4px;
+        }
+        html.dark .chat-bubble-sent {
+            background-color: #f97316; /* orange-500 */
         }
     </style>
 </head>
@@ -367,12 +385,13 @@
                                     </div>
                                 </div>
                                 <div class="card p-4 rounded-xl">
-                                    <h3 class="text-lg font-semibold mb-2">Add a Friend</h3>
-                                    <p class="text-sm text-[--text-secondary] mb-3">Add a friend by their Display Name.</p>
-                                    <form id="add-friend-form" class="flex items-center gap-2">
-                                        <input type="text" id="add-friend-name" placeholder="Enter friend's Display Name" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
-                                        <button type="submit" class="px-4 py-2 rounded-lg btn-gradient text-white font-semibold flex-shrink-0">Send</button>
+                                    <h3 class="text-lg font-semibold mb-2">Find Friends</h3>
+                                    <p class="text-sm text-[--text-secondary] mb-3">Search for users by their Display Name or User ID.</p>
+                                    <form id="add-friend-form" class="flex items-center gap-2 mb-4">
+                                        <input type="text" id="add-friend-name" placeholder="Name or User ID" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
+                                        <button type="submit" class="px-4 py-2 rounded-lg btn-gradient text-white font-semibold flex-shrink-0">Search</button>
                                     </form>
+                                    <div id="friend-search-results" class="space-y-2"></div>
                                     <p id="friend-feedback" class="text-sm mt-2 h-5"></p>
                                 </div>
                             </div>
@@ -428,7 +447,7 @@
         </div>
     </div>
     
-    <!-- Date Picker Modal -->
+    <!-- Modals -->
     <div id="date-picker-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-backdrop">
         <div class="card p-6 rounded-xl w-full max-w-sm m-4">
             <h3 class="text-xl font-bold mb-4">Go to Date</h3>
@@ -442,13 +461,10 @@
         </div>
     </div>
 
-    <!-- Transaction Detail/Delete Modal -->
     <div id="transaction-detail-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-backdrop">
         <div class="card p-6 rounded-xl w-full max-w-sm m-4">
             <h3 class="text-xl font-bold mb-4">Transaction Details</h3>
-            <div id="transaction-detail-content" class="space-y-2 mb-6 text-sm">
-                <!-- Details will be populated here by JS -->
-            </div>
+            <div id="transaction-detail-content" class="space-y-2 mb-6 text-sm"></div>
             <div class="flex justify-between gap-2">
                 <button type="button" id="transaction-detail-delete" class="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white font-semibold">Delete</button>
                 <button type="button" id="transaction-detail-close" class="px-4 py-2 rounded-lg hover:bg-[--bg-tertiary]">Close</button>
@@ -456,7 +472,6 @@
         </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
     <div id="delete-confirm-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-backdrop">
         <div class="card p-6 rounded-xl w-full max-w-sm m-4">
             <h3 class="text-xl font-bold mb-4">Are you sure?</h3>
@@ -505,6 +520,9 @@
         
         // --- PWA SETUP ---
         function setupPwa() {
+            const logoUrl = "https://i.pinimg.com/1200x/5f/3b/eb/5f3beb777df379dd4b9bb4a85b3ac501.jpg";
+            document.getElementById('apple-touch-icon').href = logoUrl;
+            
             const manifest = {
                 "name": "AURA - Expense Tracker",
                 "short_name": "AURA",
@@ -514,8 +532,8 @@
                 "theme_color": "#f97316",
                 "description": "Your Personal & Social Finance Tracker",
                 "icons": [
-                    { "src": "https://placehold.co/192x192/f97316/ffffff?text=AURA", "sizes": "192x192", "type": "image/png" },
-                    { "src": "https://placehold.co/512x512/f97316/ffffff?text=AURA", "sizes": "512x512", "type": "image/png" }
+                    { "src": logoUrl, "sizes": "192x192", "type": "image/jpeg" },
+                    { "src": logoUrl, "sizes": "512x512", "type": "image/jpeg" }
                 ]
             };
             const manifestString = JSON.stringify(manifest);
@@ -525,7 +543,7 @@
 
             if ('serviceWorker' in navigator) {
                 const swContent = `
-                    const CACHE_NAME = 'aura-cache-v1';
+                    const CACHE_NAME = 'aura-cache-v2';
                     const urlsToCache = [
                         '/',
                         'https://cdn.tailwindcss.com',
@@ -541,7 +559,16 @@
                             caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
                         );
                     });
-
+                     self.addEventListener('activate', event => {
+                        event.waitUntil(
+                            caches.keys().then(cacheNames => {
+                                return Promise.all(
+                                    cacheNames.filter(cacheName => cacheName !== CACHE_NAME)
+                                        .map(cacheName => caches.delete(cacheName))
+                                );
+                            })
+                        );
+                    });
                     self.addEventListener('fetch', event => {
                         event.respondWith(
                             caches.match(event.request).then(response => {
@@ -559,7 +586,10 @@
                 const swUrl = URL.createObjectURL(swBlob);
 
                 navigator.serviceWorker.register(swUrl)
-                    .then(registration => console.log('Service Worker registered with scope:', registration.scope))
+                    .then(registration => {
+                        console.log('Service Worker registered');
+                        registration.update(); // Check for updates on load
+                    })
                     .catch(error => console.log('Service Worker registration failed:', error));
             }
         }
@@ -594,7 +624,7 @@
 
             if (user) {
                 const pin = localStorage.getItem('aura-pin');
-                if(pin && isInitialLoad){
+                 if(pin && isInitialLoad && !sessionStorage.getItem('unlocked')){
                     authScreen.classList.add('hidden');
                     appScreen.classList.add('hidden');
                     document.getElementById('app-lock-screen').style.display = 'flex';
@@ -602,6 +632,7 @@
                     showAppContent(isInitialLoad, oldUser);
                 }
             } else {
+                sessionStorage.removeItem('unlocked');
                 if (transactionChannel) transactionChannel.unsubscribe();
                 if (friendshipChannel) friendshipChannel.unsubscribe();
                 if (messageChannel) messageChannel.unsubscribe();
@@ -632,29 +663,39 @@
                 document.getElementById(id).src = avatarUrl || placeholder;
             });
             
-            if (!oldUser && user && !isInitialLoad) {
-                authScreen.classList.add('hidden');
-                appScreen.classList.add('hidden');
-                welcomeMessage.textContent = `Hello, ${displayName}!`;
-                welcomeScreen.style.display = 'flex';
-                void welcomeScreen.offsetWidth;
-                welcomeScreen.classList.remove('opacity-0');
-                setTimeout(() => {
-                    welcomeScreen.classList.add('opacity-0');
-                    setTimeout(() => {
-                        welcomeScreen.style.display = 'none';
-                        appScreen.classList.remove('hidden');
-                    }, 500);
-                }, 2000);
-            } else {
+            if (!oldUser && user && !isInitialLoad) { // Only show on new login
+                 showWelcomeScreen(displayName);
+            } else if (isInitialLoad && !sessionStorage.getItem('unlocked')) {
+                showWelcomeScreen(displayName);
+            } else { // On subsequent loads or if already unlocked
                 authScreen.classList.add('hidden');
                 appScreen.classList.remove('hidden');
             }
+             sessionStorage.setItem('unlocked', 'true');
+
 
             await fetchInitialTransactions();
             await fetchFriendships();
             listenToTransactions();
             listenToFriendships();
+        }
+
+        function showWelcomeScreen(displayName) {
+            const welcomeScreen = document.getElementById('welcome-screen');
+            const welcomeMessage = document.getElementById('welcome-message');
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('app-screen').classList.add('hidden');
+            welcomeMessage.textContent = `Hello, ${displayName}!`;
+            welcomeScreen.style.display = 'flex';
+            void welcomeScreen.offsetWidth;
+            welcomeScreen.classList.remove('opacity-0');
+            setTimeout(() => {
+                welcomeScreen.classList.add('opacity-0');
+                setTimeout(() => {
+                    welcomeScreen.style.display = 'none';
+                    document.getElementById('app-screen').classList.remove('hidden');
+                }, 500);
+            }, 2000);
         }
         
         // --- AUTH FORM LOGIC ---
@@ -734,7 +775,10 @@
             }
         });
         
-        document.getElementById('sign-out-btn').addEventListener('click', () => supabaseClient.auth.signOut());
+        document.getElementById('sign-out-btn').addEventListener('click', () => {
+             sessionStorage.removeItem('unlocked');
+             supabaseClient.auth.signOut()
+        });
         document.getElementById('copy-user-id').addEventListener('click', () => {
              const userIdInput = document.getElementById('user-id-display');
              userIdInput.select();
@@ -1179,7 +1223,10 @@
         const chatPlaceholder = document.getElementById('chat-placeholder');
         const friendsListContainer = document.querySelector('.md\\:col-span-1');
         const backToFriendsListBtn = document.getElementById('back-to-friends-list');
-
+        const addFriendForm = document.getElementById('add-friend-form');
+        const friendFeedback = document.getElementById('friend-feedback');
+        const searchResultsEl = document.getElementById('friend-search-results');
+        
         async function fetchFriendships() {
             if (!user) return;
 
@@ -1256,48 +1303,62 @@
             }
         }
         
-        async function handleAddFriend(e) {
+        async function handleFriendSearch(e) {
             e.preventDefault();
             if (!user) return;
-            const friendName = document.getElementById('add-friend-name').value.trim();
-            if (!friendName) {
-                friendFeedback.textContent = 'Please enter a name.';
-                friendFeedback.className = 'text-sm mt-2 h-5 text-red-500';
-                return;
-            }
-            
-            const { data: friend, error: searchError } = await supabaseClient.rpc('search_user_by_name', { search_name: friendName });
+            const searchTerm = document.getElementById('add-friend-name').value.trim();
+            if (!searchTerm) return;
 
-            if (searchError || !friend) {
-                friendFeedback.textContent = `Could not find a user named "${friendName}".`;
-                friendFeedback.className = 'text-sm mt-2 h-5 text-red-500';
-                return;
-            }
+            friendFeedback.textContent = 'Searching...';
+            friendFeedback.className = 'text-sm mt-2 h-5 text-orange-500';
+            searchResultsEl.innerHTML = '';
 
-            if (friend.id === user.id) {
-                friendFeedback.textContent = "You can't add yourself as a friend.";
+            const { data, error } = await supabaseClient.rpc('search_users', { search_term: searchTerm });
+
+            if (error) {
+                friendFeedback.textContent = 'Error finding users.';
                 friendFeedback.className = 'text-sm mt-2 h-5 text-red-500';
                 return;
             }
 
-            const { error } = await supabaseClient
+            if (data.length === 0) {
+                friendFeedback.textContent = 'No users found.';
+                 friendFeedback.className = 'text-sm mt-2 h-5 text-orange-500';
+                return;
+            }
+
+            friendFeedback.textContent = '';
+            data.forEach(foundUser => {
+                const el = document.createElement('div');
+                el.className = 'flex items-center justify-between card p-2 rounded-lg';
+                const placeholder = `https://placehold.co/32x32/fed7aa/7c2d12?text=${foundUser.display_name.charAt(0)}`;
+                el.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <img src="${foundUser.avatar_url || placeholder}" class="w-8 h-8 rounded-full object-cover">
+                        <p>${foundUser.display_name}</p>
+                    </div>
+                    <button data-add-id="${foundUser.id}" class="add-friend-btn px-3 py-1 text-xs btn-gradient text-white rounded-full">Add</button>
+                `;
+                searchResultsEl.appendChild(el);
+            });
+        }
+
+        async function handleSendFriendRequest(addresseeId) {
+             const { error } = await supabaseClient
                 .from('friendships')
-                .insert({ requester_id: user.id, addressee_id: friend.id });
-            
+                .insert({ requester_id: user.id, addressee_id: addresseeId });
+
             if (error) {
                  if (error.code === '23505') {
-                    friendFeedback.textContent = 'You have already sent a request to this user.';
+                    alert('You have already sent a request to this user or are already friends.');
                  } else {
-                    friendFeedback.textContent = `Error: ${error.message}`;
+                    alert(`Error: ${error.message}`);
                  }
-                 friendFeedback.className = 'text-sm mt-2 h-5 text-red-500';
             } else {
-                friendFeedback.textContent = 'Friend request sent!';
-                friendFeedback.className = 'text-sm mt-2 h-5 text-green-500';
-                addFriendForm.reset();
+                alert('Friend request sent!');
             }
-            setTimeout(() => friendFeedback.textContent = '', 3000);
         }
+
 
         async function handleRequestAction(e, newStatus) {
             if (!user || !e.target.dataset.friendshipId) return;
@@ -1328,6 +1389,16 @@
              }
         }
 
+        addFriendForm.addEventListener('submit', handleFriendSearch);
+        searchResultsEl.addEventListener('click', (e) => {
+            if (e.target.classList.contains('add-friend-btn')) {
+                const addresseeId = e.target.dataset.addId;
+                handleSendFriendRequest(addresseeId);
+                e.target.textContent = 'Sent';
+                e.target.disabled = true;
+            }
+        });
+        
         friendsPage.addEventListener('click', (e) => {
             const chatBtn = e.target.closest('.start-chat-btn');
             if (chatBtn) {
@@ -1345,17 +1416,13 @@
             if (!user) return;
             
             const subscriptionFilter = `receiver_id=eq.${user.id}`;
-            messageChannel = supabaseClient.channel('public:messages', {
-                config: {
-                    postgres_changes: [ { event: 'INSERT', schema: 'public', table: 'messages', filter: subscriptionFilter } ]
-                }
-            })
-            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `receiver_id=eq.${user.id}` }, 
+            messageChannel = supabaseClient.channel('public:messages')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: subscriptionFilter }, 
                 (payload) => {
                     if (currentChatFriend && payload.new.sender_id === (currentChatFriend.requester_id === user.id ? currentChatFriend.addressee_id : currentChatFriend.requester_id)) {
                         messagesCache.push(payload.new);
                         renderMessages();
-                    } else if (document.hidden) {
+                    } else if (document.hidden || !document.hasFocus()) {
                         showNotification(payload.new);
                     }
                 })
@@ -1363,31 +1430,92 @@
         }
 
         
-        // --- PROFILE PAGE LOGIC (with security settings) ---
-        const hidePreviewsCheckbox = document.getElementById('hide-previews');
+        // --- PROFILE PAGE LOGIC ---
+        const avatarUploadInput = document.getElementById('avatar-upload');
+        const updateNameForm = document.getElementById('update-name-form');
+        const changePasswordForm = document.getElementById('change-password-form');
+        const profileFeedback = document.getElementById('profile-feedback');
+        const appPinForm = document.getElementById('app-pin-form');
         
-        hidePreviewsCheckbox.checked = localStorage.getItem('hide-previews') === 'true';
-        hidePreviewsCheckbox.addEventListener('change', (e) => {
-            localStorage.setItem('hide-previews', e.target.checked);
-        });
+        async function handleAvatarUpload(e) {
+            if (!user || !e.target.files || e.target.files.length === 0) return;
+            const file = e.target.files[0];
+            const fileExt = file.name.split('.').pop();
+            const filePath = `${user.id}/${Date.now()}.${fileExt}`;
 
-        // --- NOTIFICATION LOGIC ---
-        function showNotification(message) {
-             if (!('Notification' in window)) return;
-             if (Notification.permission === 'granted') {
-                const hidePreviews = localStorage.getItem('hide-previews') === 'true';
-                const friend = friendshipsCache.find(f => f.requester_id === message.sender_id || f.addressee_id === message.sender_id);
-                const senderName = friend ? (friend.requester_id === user.id ? friend.addressee_name : friend.requester_name) : 'A friend';
-                
-                const title = `New message from ${senderName}`;
-                const body = hidePreviews ? 'Open AURA to read the message.' : message.content;
+            profileFeedback.textContent = 'Uploading...';
+            profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right text-orange-500';
 
-                navigator.serviceWorker.ready.then(registration => {
-                    registration.showNotification(title, { body });
-                });
-             }
+            const { error: uploadError } = await supabaseClient.storage.from('profile-pictures').upload(filePath, file);
+
+            if (uploadError) {
+                console.error('Avatar upload error:', uploadError);
+                profileFeedback.textContent = 'Upload failed.';
+                profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right text-red-500';
+                return;
+            }
+
+            const { data: { publicUrl } } = supabaseClient.storage.from('profile-pictures').getPublicUrl(filePath);
+
+            const { error: updateUserError } = await supabaseClient.auth.updateUser({
+                data: { avatar_url: publicUrl }
+            });
+
+            if (updateUserError) {
+                 profileFeedback.textContent = 'Failed to update profile.';
+                 profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right text-red-500';
+            } else {
+                 profileFeedback.textContent = 'Avatar updated!';
+                 profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right text-green-500';
+                 document.getElementById('profile-avatar').src = publicUrl;
+                 document.getElementById('nav-avatar').src = publicUrl;
+                 document.getElementById('header-avatar').src = publicUrl;
+            }
+             setTimeout(() => profileFeedback.textContent = '', 3000);
         }
-        
+
+        async function handleUpdateName(e) {
+            e.preventDefault();
+            const newName = document.getElementById('profile-name').value;
+            if (!newName || newName === user.user_metadata.display_name) return;
+
+             const { error } = await supabaseClient.auth.updateUser({
+                data: { display_name: newName }
+            });
+            if (error) {
+                profileFeedback.textContent = `Error: ${error.message}`;
+                profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right text-red-500';
+            } else {
+                profileFeedback.textContent = 'Display name updated!';
+                profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right text-green-500';
+                document.getElementById('display-name').textContent = newName;
+            }
+            setTimeout(() => profileFeedback.textContent = '', 3000);
+        }
+
+        async function handleChangePassword(e) {
+             e.preventDefault();
+             const newPassword = document.getElementById('new-password').value;
+             if (!newPassword) return;
+
+             const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
+             
+             if (error) {
+                profileFeedback.textContent = `Error: ${error.message}`;
+                profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right text-red-500';
+             } else {
+                profileFeedback.textContent = 'Password updated successfully!';
+                profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right text-green-500';
+                changePasswordForm.reset();
+             }
+             setTimeout(() => profileFeedback.textContent = '', 3000);
+        }
+
+        avatarUploadInput.addEventListener('change', handleAvatarUpload);
+        updateNameForm.addEventListener('submit', handleUpdateName);
+        changePasswordForm.addEventListener('submit', handleChangePassword);
+
+
         // --- STARTUP ---
         document.addEventListener('DOMContentLoaded', () => {
             initializeSupabase();
