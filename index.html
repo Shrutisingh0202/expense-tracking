@@ -6,6 +6,7 @@
     <title>AURA - Expense Tracker (Supabase)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/plugin/customParseFormat.min.js"></script>
     <!-- Supabase JS Client -->
@@ -52,8 +53,8 @@
             color: var(--text-primary);
             transition: background-color 0.3s, color 0.3s;
         }
-        .bg-gradient-main {
-            background: linear-gradient(135deg, var(--gradient-main-from) 0%, var(--gradient-main-to) 100%);
+        .bg-gradient-login {
+             background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
         }
         .text-gradient {
             background: linear-gradient(135deg, var(--text-gradient-from) 0%, var(--text-gradient-to) 100%);
@@ -89,18 +90,52 @@
         #auth-display-name.hidden {
             display: none;
         }
+        .font-cursive {
+            font-family: 'Playfair Display', serif;
+        }
     </style>
 </head>
 <body>
 
     <!-- Welcome Screen -->
-    <div id="welcome-screen" class="fixed inset-0 z-50 items-center justify-center transition-opacity duration-500 ease-in-out opacity-0 pointer-events-none" style="background: linear-gradient(to top, #fef08a, #f97316, #dc2626); display: none;">
-        <h1 id="welcome-message" class="text-5xl font-bold" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">Welcome!</h1>
+    <div id="welcome-screen" class="fixed inset-0 z-[60] flex items-center justify-center transition-opacity duration-500 ease-in-out opacity-0 pointer-events-none" style="background: linear-gradient(to top, #fef08a, #f97316, #dc2626);">
+        <h1 id="welcome-message" class="text-5xl font-bold font-cursive italic" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">Hello!</h1>
+    </div>
+
+    <!-- App Lock Screen -->
+    <div id="app-lock-screen" class="fixed inset-0 z-50 items-center justify-center bg-gradient-login p-4" style="display: none;">
+        <div class="w-full max-w-xs text-center">
+            <h2 class="text-2xl font-bold text-white mb-2">Enter PIN</h2>
+            <p class="text-white/80 mb-4">Enter your 4-digit PIN to unlock AURA.</p>
+            <div id="pin-dots" class="flex justify-center gap-4 mb-4">
+                <div class="w-4 h-4 rounded-full border-2 border-white"></div>
+                <div class="w-4 h-4 rounded-full border-2 border-white"></div>
+                <div class="w-4 h-4 rounded-full border-2 border-white"></div>
+                <div class="w-4 h-4 rounded-full border-2 border-white"></div>
+            </div>
+             <p id="pin-error" class="text-red-300 text-sm h-5 mb-2"></p>
+            <div class="grid grid-cols-3 gap-4 text-white text-2xl font-bold">
+                <button class="pin-btn p-4 rounded-full bg-white/20 hover:bg-white/30">1</button>
+                <button class="pin-btn p-4 rounded-full bg-white/20 hover:bg-white/30">2</button>
+                <button class="pin-btn p-4 rounded-full bg-white/20 hover:bg-white/30">3</button>
+                <button class="pin-btn p-4 rounded-full bg-white/20 hover:bg-white/30">4</button>
+                <button class="pin-btn p-4 rounded-full bg-white/20 hover:bg-white/30">5</button>
+                <button class="pin-btn p-4 rounded-full bg-white/20 hover:bg-white/30">6</button>
+                <button class="pin-btn p-4 rounded-full bg-white/20 hover:bg-white/30">7</button>
+                <button class="pin-btn p-4 rounded-full bg-white/20 hover:bg-white/30">8</button>
+                <button class="pin-btn p-4 rounded-full bg-white/20 hover:bg-white/30">9</button>
+                <div></div>
+                <button class="pin-btn p-4 rounded-full bg-white/20 hover:bg-white/30">0</button>
+                <button id="pin-backspace" class="p-4 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 002.828 0L21 12M3 12l6.414-6.414a2 2 0 012.828 0L21 12" /></svg>
+                </button>
+            </div>
+        </div>
     </div>
 
 
     <!-- Auth Screen -->
-    <div id="auth-screen" class="min-h-screen flex items-center justify-center bg-gradient-main p-4">
+    <div id="auth-screen" class="min-h-screen flex items-center justify-center bg-gradient-login p-4">
         <div class="w-full max-w-md">
             <div class="text-center mb-6">
                 <h1 class="text-5xl font-bold text-gradient mb-2">AURA</h1>
@@ -216,13 +251,13 @@
 
                         <!-- Summary Boxes -->
                         <div class="grid grid-cols-2 gap-4">
-                           <div class="card p-4 rounded-xl bg-gradient-main col-span-2">
-                                <h3 class="text-sm text-orange-900 dark:text-orange-100 mb-1">Total Closing Balance</h3>
-                                <p id="closing-balance" class="text-2xl font-bold text-slate-800 dark:text-white">₹0.00</p>
-                           </div>
                            <div class="card p-4 rounded-xl col-span-2">
                                 <h3 class="text-sm text-[--text-secondary] mb-1">Total Opening Balance</h3>
                                 <p id="opening-balance" class="text-2xl font-bold">₹0.00</p>
+                           </div>
+                           <div class="card p-4 rounded-xl col-span-2">
+                                <h3 class="text-sm text-[--text-secondary] mb-1">Total Closing Balance</h3>
+                                <p id="closing-balance" class="text-2xl font-bold">₹0.00</p>
                            </div>
                            <div class="card p-4 rounded-xl">
                                 <h3 class="text-sm text-[--text-secondary] mb-1">Gains</h3>
@@ -266,7 +301,7 @@
 
                     <!-- Other Pages -->
                      <div id="profile" class="page-content hidden card p-6 rounded-xl space-y-6">
-                        <h2 class="text-2xl font-bold">My Profile</h2>
+                        <h2 class="text-2xl font-bold">My Profile & Settings</h2>
                         
                         <!-- Profile Details -->
                         <div class="card p-4 rounded-xl">
@@ -290,6 +325,21 @@
                              <p id="profile-feedback" class="text-sm mt-2 h-5 text-center sm:text-right"></p>
                         </div>
 
+                        <!-- Security Settings -->
+                        <div class="card p-4 rounded-xl">
+                            <h3 class="text-lg font-semibold mb-2">Security & Privacy</h3>
+                            <div class="space-y-4">
+                                <form id="app-pin-form" class="flex flex-col sm:flex-row items-center gap-2">
+                                     <input type="text" id="app-pin" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="Set 4-digit App PIN" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none">
+                                     <button type="submit" class="w-full sm:w-auto px-4 py-2 rounded-lg btn-gradient text-white font-semibold">Save PIN</button>
+                                </form>
+                                <div class="flex items-center justify-between">
+                                    <label for="hide-previews" class="text-sm">Hide message previews in notifications</label>
+                                    <input type="checkbox" id="hide-previews" class="h-5 w-5 rounded text-orange-500 focus:ring-orange-500">
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Change Password -->
                         <div class="card p-4 rounded-xl">
                              <h3 class="text-lg font-semibold mb-2">Change Password</h3>
@@ -300,34 +350,55 @@
                         </div>
                      </div>
                      <div id="jars" class="page-content hidden card p-6 rounded-xl"><h2 class="text-2xl font-bold">Joint Jars</h2><p class="text-[--text-secondary] mt-4">Feature coming soon! Once you have friends, you can create joint savings jars here.</p></div>
-                     <div id="friends" class="page-content hidden card p-6 rounded-xl">
-                        <h2 class="text-2xl font-bold mb-4">Friends</h2>
-                        <div class="space-y-6">
-                            <!-- Add Friend -->
-                            <div class="card p-4 rounded-xl">
-                                <h3 class="text-lg font-semibold mb-2">Add a Friend</h3>
-                                <p class="text-sm text-[--text-secondary] mb-3">Add a friend by their Display Name.</p>
-                                <form id="add-friend-form" class="flex items-center gap-2">
-                                    <input type="text" id="add-friend-name" placeholder="Enter friend's Display Name" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
-                                    <button type="submit" class="px-4 py-2 rounded-lg btn-gradient text-white font-semibold flex-shrink-0">Send Request</button>
+                     <div id="friends" class="page-content hidden card p-6 rounded-xl space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- Friends List & Requests -->
+                            <div class="md:col-span-1 space-y-6">
+                                <div class="card p-4 rounded-xl">
+                                    <h3 class="text-lg font-semibold mb-2">My Friends</h3>
+                                    <div id="friends-list" class="space-y-2">
+                                         <p class="text-sm text-[--text-secondary]">You haven't added any friends yet.</p>
+                                    </div>
+                                </div>
+                                 <div class="card p-4 rounded-xl">
+                                    <h3 class="text-lg font-semibold mb-2">Incoming Requests</h3>
+                                    <div id="incoming-requests-list" class="space-y-2">
+                                        <p class="text-sm text-[--text-secondary]">No new friend requests.</p>
+                                    </div>
+                                </div>
+                                <div class="card p-4 rounded-xl">
+                                    <h3 class="text-lg font-semibold mb-2">Add a Friend</h3>
+                                    <p class="text-sm text-[--text-secondary] mb-3">Add a friend by their Display Name.</p>
+                                    <form id="add-friend-form" class="flex items-center gap-2">
+                                        <input type="text" id="add-friend-name" placeholder="Enter friend's Display Name" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
+                                        <button type="submit" class="px-4 py-2 rounded-lg btn-gradient text-white font-semibold flex-shrink-0">Send</button>
+                                    </form>
+                                    <p id="friend-feedback" class="text-sm mt-2 h-5"></p>
+                                </div>
+                            </div>
+                             <!-- Chat Window -->
+                            <div id="chat-window" class="md:col-span-2 card rounded-xl flex flex-col" style="display: none;">
+                                <div class="flex items-center gap-2 p-3 border-b border-[--border-color]">
+                                    <button id="back-to-friends-list" class="p-2 rounded-full hover:bg-[--bg-tertiary] md:hidden">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                                    </button>
+                                    <img id="chat-avatar" class="w-8 h-8 rounded-full" src="">
+                                    <h3 id="chat-friend-name" class="font-bold"></h3>
+                                </div>
+                                <div id="chat-messages" class="flex-1 p-4 space-y-4 overflow-y-auto">
+                                    <!-- Messages will appear here -->
+                                </div>
+                                <form id="chat-form" class="p-3 border-t border-[--border-color] flex items-center gap-2">
+                                    <input type="text" id="chat-input" placeholder="Type a message..." class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-full py-2 px-4 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
+                                    <button type="submit" class="p-2 rounded-full btn-gradient text-white">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                                    </button>
                                 </form>
-                                <p id="friend-feedback" class="text-sm mt-2 h-5"></p>
                             </div>
-
-                            <!-- Incoming Requests -->
-                            <div>
-                                <h3 class="text-lg font-semibold mb-2">Incoming Requests</h3>
-                                <div id="incoming-requests-list" class="space-y-2">
-                                    <p class="text-sm text-[--text-secondary]">No new friend requests.</p>
-                                </div>
-                            </div>
-
-                             <!-- My Friends -->
-                            <div>
-                                <h3 class="text-lg font-semibold mb-2">My Friends</h3>
-                                <div id="friends-list" class="space-y-2">
-                                     <p class="text-sm text-[--text-secondary]">You haven't added any friends yet.</p>
-                                </div>
+                             <div id="chat-placeholder" class="md:col-span-2 card rounded-xl flex flex-col items-center justify-center text-center p-8">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-orange-300 dark:text-orange-700 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                                <h3 class="text-lg font-bold">Select a friend to start chatting</h3>
+                                <p class="text-sm text-[--text-secondary]">Your conversations will appear here.</p>
                             </div>
                         </div>
                     </div>
@@ -405,19 +476,22 @@
         const supabaseUrl = 'https://ahdsjmblyfklicnjlndt.supabase.co'; 
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoZHNqbWJseWZrbGljbmpsbmR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzODIzMjIsImV4cCI6MjA3Mzk1ODMyMn0.jyoK7mllXzd6NXh5bJOIoJVT3MTyzqbu7M5YKQKpyMo';
         
-        let supabaseClient, user = null, transactionChannel = null, friendshipChannel = null;
+        let supabaseClient, user = null, transactionChannel = null, friendshipChannel = null, messageChannel = null;
         let transactionsCache = [];
         let friendshipsCache = [];
+        let messagesCache = [];
         let currentDisplayDate = dayjs();
         let isLoginMode = true;
         let viewScope = 'month'; // 'month' or 'day'
         let transactionToDeleteId = null;
+        let currentChatFriend = null;
+        let pinInput = '';
         
         dayjs.extend(dayjs_plugin_customParseFormat);
         
         const monthDisplay = document.getElementById('month-display');
         
-        // --- THEME MANAGEMENT --- (Unchanged)
+        // --- THEME MANAGEMENT ---
         const themeToggleBtn = document.getElementById('theme-toggle-btn');
         function setTheme(theme) {
             localStorage.setItem('theme', theme);
@@ -456,6 +530,7 @@
                         '/',
                         'https://cdn.tailwindcss.com',
                         'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
+                        'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap',
                         'https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js',
                         'https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/plugin/customParseFormat.min.js',
                         'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'
@@ -473,6 +548,11 @@
                                 return response || fetch(event.request);
                             })
                         );
+                    });
+
+                     self.addEventListener('notificationclick', event => {
+                        event.notification.close();
+                        event.waitUntil(clients.openWindow('/'));
                     });
                 `;
                 const swBlob = new Blob([swContent], {type: 'application/javascript'});
@@ -499,7 +579,7 @@
         
         async function setupAuthObserver() {
             const { data: { session } } = await supabaseClient.auth.getSession();
-            handleUserSession(session, true); // Pass true for initial load
+            handleUserSession(session, true);
 
             supabaseClient.auth.onAuthStateChange((_event, session) => {
                 handleUserSession(session);
@@ -507,68 +587,74 @@
         }
         
         async function handleUserSession(session, isInitialLoad = false) {
-            console.log("DEBUG: Handling user session...");
             const authScreen = document.getElementById('auth-screen');
             const appScreen = document.getElementById('app-screen');
-            const welcomeScreen = document.getElementById('welcome-screen');
-            const welcomeMessage = document.getElementById('welcome-message');
-            
             const oldUser = user;
             user = session?.user || null;
 
             if (user) {
-                const displayName = user.user_metadata?.display_name || 'No Name';
-                const avatarUrl = user.user_metadata?.avatar_url;
-                
-                // Update UI elements
-                document.getElementById('user-id-display').value = user.id;
-                document.getElementById('display-name').textContent = displayName;
-                document.getElementById('profile-email').textContent = user.email;
-                document.getElementById('profile-name').value = displayName;
-                const placeholder = `https://placehold.co/96x96/fed7aa/7c2d12?text=${displayName.charAt(0)}`;
-                [ 'nav-avatar', 'profile-avatar', 'header-avatar' ].forEach(id => {
-                    document.getElementById(id).src = avatarUrl || placeholder;
-                });
-                
-                // Show welcome screen only on fresh login, not on refresh
-                if (!oldUser && user && !isInitialLoad) {
+                const pin = localStorage.getItem('aura-pin');
+                if(pin && isInitialLoad){
                     authScreen.classList.add('hidden');
                     appScreen.classList.add('hidden');
-
-                    welcomeMessage.textContent = `Welcome, ${displayName}!`;
-                    welcomeScreen.style.display = 'flex';
-                    void welcomeScreen.offsetWidth;
-                    welcomeScreen.classList.remove('opacity-0');
-
-                    setTimeout(() => {
-                        welcomeScreen.classList.add('opacity-0');
-                        setTimeout(() => {
-                            welcomeScreen.style.display = 'none';
-                            appScreen.classList.remove('hidden');
-                        }, 500);
-                    }, 2000);
+                    document.getElementById('app-lock-screen').style.display = 'flex';
                 } else {
-                    authScreen.classList.add('hidden');
-                    appScreen.classList.remove('hidden');
+                    showAppContent(isInitialLoad, oldUser);
                 }
-
-                console.log("DEBUG: Fetching initial data...");
-                await fetchInitialTransactions();
-                await fetchFriendships();
-                console.log("DEBUG: Initial data fetched. Listening for changes...");
-                listenToTransactions();
-                listenToFriendships();
             } else {
-                console.log("DEBUG: No user session found.");
                 if (transactionChannel) transactionChannel.unsubscribe();
                 if (friendshipChannel) friendshipChannel.unsubscribe();
+                if (messageChannel) messageChannel.unsubscribe();
                 transactionsCache = []; 
                 friendshipsCache = [];
+                messagesCache = [];
                 appScreen.classList.add('hidden');
-                welcomeScreen.style.display = 'none';
-                welcomeScreen.classList.add('opacity-0');
+                document.getElementById('app-lock-screen').style.display = 'none';
                 authScreen.classList.remove('hidden');
             }
+        }
+
+        async function showAppContent(isInitialLoad = false, oldUser = null) {
+            const authScreen = document.getElementById('auth-screen');
+            const appScreen = document.getElementById('app-screen');
+            const welcomeScreen = document.getElementById('welcome-screen');
+            const welcomeMessage = document.getElementById('welcome-message');
+
+            const displayName = user.user_metadata?.display_name || 'No Name';
+            const avatarUrl = user.user_metadata?.avatar_url;
+            
+            document.getElementById('user-id-display').value = user.id;
+            document.getElementById('display-name').textContent = displayName;
+            document.getElementById('profile-email').textContent = user.email;
+            document.getElementById('profile-name').value = displayName;
+            const placeholder = `https://placehold.co/96x96/fed7aa/7c2d12?text=${displayName.charAt(0)}`;
+            [ 'nav-avatar', 'profile-avatar', 'header-avatar' ].forEach(id => {
+                document.getElementById(id).src = avatarUrl || placeholder;
+            });
+            
+            if (!oldUser && user && !isInitialLoad) {
+                authScreen.classList.add('hidden');
+                appScreen.classList.add('hidden');
+                welcomeMessage.textContent = `Hello, ${displayName}!`;
+                welcomeScreen.style.display = 'flex';
+                void welcomeScreen.offsetWidth;
+                welcomeScreen.classList.remove('opacity-0');
+                setTimeout(() => {
+                    welcomeScreen.classList.add('opacity-0');
+                    setTimeout(() => {
+                        welcomeScreen.style.display = 'none';
+                        appScreen.classList.remove('hidden');
+                    }, 500);
+                }, 2000);
+            } else {
+                authScreen.classList.add('hidden');
+                appScreen.classList.remove('hidden');
+            }
+
+            await fetchInitialTransactions();
+            await fetchFriendships();
+            listenToTransactions();
+            listenToFriendships();
         }
         
         // --- AUTH FORM LOGIC ---
@@ -620,12 +706,9 @@
             try {
                 if (isLoginMode) {
                     let loginEmail = identifier;
-                    // If identifier is not an email, assume it's a username
                     if (!identifier.includes('@')) {
                         const { data, error } = await supabaseClient.rpc('get_email_from_username', { p_username: identifier });
-                        if (error || !data) {
-                            throw new Error("User not found with that username.");
-                        }
+                        if (error || !data) throw new Error("User not found with that username.");
                         loginEmail = data;
                     }
                     response = await supabaseClient.auth.signInWithPassword({ email: loginEmail, password });
@@ -633,11 +716,7 @@
                     response = await supabaseClient.auth.signUp({ 
                         email, 
                         password,
-                        options: {
-                            data: {
-                                display_name: identifier // Using the identifier field for username on sign up
-                            }
-                        }
+                        options: { data: { display_name: identifier } }
                     });
                 }
                 if (response.error) throw response.error;
@@ -647,11 +726,7 @@
                 }
 
             } catch (error) {
-                if (error.message.includes('For security purposes')) {
-                    authError.textContent = 'You are trying too frequently. Please wait a minute.';
-                } else {
-                    authError.textContent = error.message;
-                }
+                authError.textContent = error.message;
                 console.error("Auth Error: ", error);
             } finally {
                 authSubmitBtn.disabled = false;
@@ -690,7 +765,6 @@
         // --- DATA LOGIC ---
         async function fetchInitialTransactions() {
             if (!user) return;
-            console.log("DEBUG: Fetching transactions from Supabase...");
             const { data, error } = await supabaseClient
                 .from('transactions')
                 .select('*')
@@ -699,7 +773,6 @@
                 console.error("Error fetching initial transactions:", error);
             } else {
                 transactionsCache = data || [];
-                console.log(`DEBUG: Found ${transactionsCache.length} transactions. Updating dashboard view...`);
                 await updateDashboardView();
             }
         }
@@ -766,7 +839,6 @@
         
         async function updateDashboardView() {
             if (!user) return; 
-            console.log("DEBUG: Updating dashboard view...");
             const transactionsTitle = document.getElementById('transactions-title');
             const backToMonthBtn = document.getElementById('back-to-month-btn');
 
@@ -795,7 +867,6 @@
 
             const monthForSummary = currentDisplayDate.startOf('month');
             const startBalances = await getStartingBalancesForMonth(monthForSummary);
-            console.log("DEBUG: Calculated start balances:", startBalances);
 
             const monthlyTransactions = transactionsCache.filter(tx => dayjs(tx.date, 'DD/MM/YYYY').isSame(currentDisplayDate, 'month'));
             
@@ -819,10 +890,8 @@
             document.getElementById('cash-balance').textContent = `₹${cashBalance.toFixed(2)}`;
             document.getElementById('online-balance').textContent = `₹${onlineBalance.toFixed(2)}`;
             document.getElementById('closing-balance').textContent = `₹${(cashBalance + onlineBalance).toFixed(2)}`;
-            console.log("DEBUG: Balances updated in DOM.");
 
             renderTransactions(transactionsToRender);
-            console.log("DEBUG: Dashboard view update complete.");
         }
         
         searchInput.addEventListener('input', updateDashboardView);
@@ -1104,10 +1173,13 @@
         importBtn.addEventListener('click', handleImport);
         exportBtn.addEventListener('click', handleExport);
         
-        // --- FRIENDS LOGIC ---
-        const addFriendForm = document.getElementById('add-friend-form');
-        const friendFeedback = document.getElementById('friend-feedback');
-        
+        // --- FRIENDS & CHAT LOGIC ---
+        const friendsPage = document.getElementById('friends');
+        const chatWindow = document.getElementById('chat-window');
+        const chatPlaceholder = document.getElementById('chat-placeholder');
+        const friendsListContainer = document.querySelector('.md\\:col-span-1');
+        const backToFriendsListBtn = document.getElementById('back-to-friends-list');
+
         async function fetchFriendships() {
             if (!user) return;
 
@@ -1115,7 +1187,7 @@
             
             if(error) {
                 console.error('Error fetching friendships:', error);
-                 if (error.message.includes('permission denied for table users')) {
+                 if (error.message.includes('permission denied')) {
                      document.getElementById('friends-list').innerHTML = '<p class="text-sm text-red-500">Error: Database permissions are not set correctly. Please run the latest SQL script from your Supabase editor to fix this.</p>';
                  }
                 else if (error.message.includes('function public.get_friendships_with_names() does not exist')) {
@@ -1147,7 +1219,6 @@
             const friends = friendshipsCache.filter(f => f.status === 'accepted');
             const incomingRequests = friendshipsCache.filter(f => f.status === 'pending' && f.addressee_id === user.id);
             
-            // Render Friends
             if (friends.length === 0) {
                 friendsListEl.innerHTML = '<p class="text-sm text-[--text-secondary]">You haven\'t added any friends yet.</p>';
             } else {
@@ -1157,14 +1228,13 @@
                     const el = document.createElement('div');
                     el.className = 'flex items-center justify-between card p-2 rounded-lg';
                     el.innerHTML = `
-                        <p class="font-semibold" >${friendName}</p>
+                        <button data-friendship-id="${f.id}" class="start-chat-btn text-left flex-1 font-semibold">${friendName}</button>
                         <button data-friendship-id="${f.id}" class="remove-friend-btn px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200">Remove</button>
                     `;
                     friendsListEl.appendChild(el);
                 });
             }
 
-            // Render Incoming Requests
             if (incomingRequests.length === 0) {
                 incomingRequestsListEl.innerHTML = '<p class="text-sm text-[--text-secondary]">No new friend requests.</p>';
             } else {
@@ -1175,7 +1245,6 @@
                     el.innerHTML = `
                         <div>
                             <p class="text-sm font-semibold">${req.requester_name}</p>
-                            <p class="text-xs text-[--text-secondary]">Wants to be your friend.</p>
                         </div>
                         <div class="flex gap-2">
                            <button data-friendship-id="${req.id}" class="accept-request-btn px-2 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200">Accept</button>
@@ -1216,7 +1285,7 @@
                 .insert({ requester_id: user.id, addressee_id: friend.id });
             
             if (error) {
-                 if (error.code === '23505') { // unique constraint violation
+                 if (error.code === '23505') {
                     friendFeedback.textContent = 'You have already sent a request to this user.';
                  } else {
                     friendFeedback.textContent = `Error: ${error.message}`;
@@ -1238,7 +1307,7 @@
                 .from('friendships')
                 .update({ status: newStatus })
                 .eq('id', friendshipId)
-                .eq('addressee_id', user.id); // Security check
+                .eq('addressee_id', user.id);
             
             if (error) {
                 console.error(`Error ${newStatus === 'accepted' ? 'accepting' : 'declining'} request:`, error);
@@ -1259,102 +1328,73 @@
              }
         }
 
-        addFriendForm.addEventListener('submit', handleAddFriend);
-        document.getElementById('friends').addEventListener('click', (e) => {
-            if (e.target.classList.contains('accept-request-btn')) handleRequestAction(e, 'accepted');
+        friendsPage.addEventListener('click', (e) => {
+            const chatBtn = e.target.closest('.start-chat-btn');
+            if (chatBtn) {
+                const friendshipId = parseInt(chatBtn.dataset.friendshipId, 10);
+                const friend = friendshipsCache.find(f => f.id === friendshipId);
+                if (friend) openChat(friend);
+            }
+             if (e.target.classList.contains('accept-request-btn')) handleRequestAction(e, 'accepted');
             if (e.target.classList.contains('decline-request-btn')) handleRequestAction(e, 'declined');
             if (e.target.classList.contains('remove-friend-btn')) handleRemoveFriend(e);
         });
-
-        // --- PROFILE PAGE LOGIC ---
-        const avatarUploadInput = document.getElementById('avatar-upload');
-        const updateNameForm = document.getElementById('update-name-form');
-        const changePasswordForm = document.getElementById('change-password-form');
-        const profileFeedback = document.getElementById('profile-feedback');
         
-        async function handleAvatarUpload(e) {
-            if (!user || !e.target.files || e.target.files.length === 0) return;
-            const file = e.target.files[0];
-            const fileExt = file.name.split('.').pop();
-            const filePath = `${user.id}/${Date.now()}.${fileExt}`;
-
-            profileFeedback.textContent = 'Uploading...';
-            profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right text-orange-500';
-
-            const { error: uploadError } = await supabaseClient.storage.from('profile-pictures').upload(filePath, file);
-
-            if (uploadError) {
-                console.error('Avatar upload error:', uploadError);
-                profileFeedback.textContent = 'Upload failed.';
-                profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right text-red-500';
-                return;
-            }
-
-            const { data: { publicUrl } } = supabaseClient.storage.from('profile-pictures').getPublicUrl(filePath);
-
-            const { error: updateUserError } = await supabaseClient.auth.updateUser({
-                data: { avatar_url: publicUrl }
-            });
-
-            if (updateUserError) {
-                 profileFeedback.textContent = 'Failed to update profile.';
-                 profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right text-red-500';
-            } else {
-                 profileFeedback.textContent = 'Avatar updated!';
-                 profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right text-green-500';
-                 document.getElementById('profile-avatar').src = publicUrl;
-                 document.getElementById('nav-avatar').src = publicUrl;
-                 document.getElementById('header-avatar').src = publicUrl;
-            }
-             setTimeout(() => profileFeedback.textContent = '', 3000);
+        function listenToMessages() {
+            if (messageChannel) messageChannel.unsubscribe();
+            if (!user) return;
+            
+            const subscriptionFilter = `receiver_id=eq.${user.id}`;
+            messageChannel = supabaseClient.channel('public:messages', {
+                config: {
+                    postgres_changes: [ { event: 'INSERT', schema: 'public', table: 'messages', filter: subscriptionFilter } ]
+                }
+            })
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `receiver_id=eq.${user.id}` }, 
+                (payload) => {
+                    if (currentChatFriend && payload.new.sender_id === (currentChatFriend.requester_id === user.id ? currentChatFriend.addressee_id : currentChatFriend.requester_id)) {
+                        messagesCache.push(payload.new);
+                        renderMessages();
+                    } else if (document.hidden) {
+                        showNotification(payload.new);
+                    }
+                })
+            .subscribe();
         }
 
-        async function handleUpdateName(e) {
-            e.preventDefault();
-            const newName = document.getElementById('profile-name').value;
-            if (!newName || newName === user.user_metadata.display_name) return;
+        
+        // --- PROFILE PAGE LOGIC (with security settings) ---
+        const hidePreviewsCheckbox = document.getElementById('hide-previews');
+        
+        hidePreviewsCheckbox.checked = localStorage.getItem('hide-previews') === 'true';
+        hidePreviewsCheckbox.addEventListener('change', (e) => {
+            localStorage.setItem('hide-previews', e.target.checked);
+        });
 
-             const { error } = await supabaseClient.auth.updateUser({
-                data: { display_name: newName }
-            });
-            if (error) {
-                profileFeedback.textContent = `Error: ${error.message}`;
-                profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right text-red-500';
-            } else {
-                profileFeedback.textContent = 'Display name updated!';
-                profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right text-green-500';
-                document.getElementById('display-name').textContent = newName;
-            }
-            setTimeout(() => profileFeedback.textContent = '', 3000);
-        }
+        // --- NOTIFICATION LOGIC ---
+        function showNotification(message) {
+             if (!('Notification' in window)) return;
+             if (Notification.permission === 'granted') {
+                const hidePreviews = localStorage.getItem('hide-previews') === 'true';
+                const friend = friendshipsCache.find(f => f.requester_id === message.sender_id || f.addressee_id === message.sender_id);
+                const senderName = friend ? (friend.requester_id === user.id ? friend.addressee_name : friend.requester_name) : 'A friend';
+                
+                const title = `New message from ${senderName}`;
+                const body = hidePreviews ? 'Open AURA to read the message.' : message.content;
 
-        async function handleChangePassword(e) {
-             e.preventDefault();
-             const newPassword = document.getElementById('new-password').value;
-             if (!newPassword) return;
-
-             const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
-             
-             if (error) {
-                profileFeedback.textContent = `Error: ${error.message}`;
-                profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right text-red-500';
-             } else {
-                profileFeedback.textContent = 'Password updated successfully!';
-                profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right text-green-500';
-                changePasswordForm.reset();
+                navigator.serviceWorker.ready.then(registration => {
+                    registration.showNotification(title, { body });
+                });
              }
-             setTimeout(() => profileFeedback.textContent = '', 3000);
         }
-
-        avatarUploadInput.addEventListener('change', handleAvatarUpload);
-        updateNameForm.addEventListener('submit', handleUpdateName);
-        changePasswordForm.addEventListener('submit', handleChangePassword);
-
-
+        
         // --- STARTUP ---
         document.addEventListener('DOMContentLoaded', () => {
             initializeSupabase();
             setupPwa();
+            if ('Notification' in window && Notification.permission !== 'granted') {
+                Notification.requestPermission();
+            }
         });
     </script>
 </body>
