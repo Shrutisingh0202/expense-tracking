@@ -15,7 +15,7 @@
     <!-- PWA Manifest and Meta Tags -->
     <link id="manifest-link" rel="manifest">
     <meta name="theme-color" content="#f97316">
-    <link id="apple-touch-icon" rel="apple-touch-icon" href="https://i.pinimg.com/1200x/5f/3b/eb/5f3beb777df379dd4b9bb4a85b3ac501.jpg">
+    <link id="apple-touch-icon" rel="apple-touch-icon" href="https://i.imgur.com/pY959V7.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="AURA">
@@ -111,25 +111,37 @@
         html.dark .chat-bubble-sent {
             background-color: #f97316; /* orange-500 */
         }
+        
+        /* PIN Shake Animation */
+        @keyframes shake {
+          10%, 90% { transform: translate3d(-1px, 0, 0); }
+          20%, 80% { transform: translate3d(2px, 0, 0); }
+          30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+          40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+        .shake {
+          animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+        }
     </style>
 </head>
 <body>
 
     <!-- Welcome Screen -->
-    <div id="welcome-screen" class="fixed inset-0 z-[60] flex items-center justify-center transition-opacity duration-500 ease-in-out opacity-0 pointer-events-none" style="background: linear-gradient(to top, #fef08a, #f97316, #dc2626);">
+    <div id="welcome-screen" class="fixed inset-0 z-[60] flex flex-col items-center justify-center transition-opacity duration-500 ease-in-out opacity-0 pointer-events-none" style="background: linear-gradient(to top, #fef08a, #f97316, #dc2626);">
+        <img src="https://i.imgur.com/pY959V7.png" alt="AURA Logo" class="w-32 h-32 rounded-full mb-4 shadow-lg">
         <h1 id="welcome-message" class="text-5xl font-bold font-cursive italic" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">Hello!</h1>
     </div>
 
     <!-- App Lock Screen -->
-    <div id="app-lock-screen" class="fixed inset-0 z-50 items-center justify-center bg-gradient-login p-4" style="display: none;">
+    <div id="app-lock-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-gradient-login p-4" style="display: none;">
         <div class="w-full max-w-xs text-center">
             <h2 class="text-2xl font-bold text-white mb-2">Enter PIN</h2>
             <p class="text-white/80 mb-4">Enter your 4-digit PIN to unlock AURA.</p>
             <div id="pin-dots" class="flex justify-center gap-4 mb-4">
-                <div class="w-4 h-4 rounded-full border-2 border-white"></div>
-                <div class="w-4 h-4 rounded-full border-2 border-white"></div>
-                <div class="w-4 h-4 rounded-full border-2 border-white"></div>
-                <div class="w-4 h-4 rounded-full border-2 border-white"></div>
+                <div class="w-4 h-4 rounded-full border-2 border-white transition-colors"></div>
+                <div class="w-4 h-4 rounded-full border-2 border-white transition-colors"></div>
+                <div class="w-4 h-4 rounded-full border-2 border-white transition-colors"></div>
+                <div class="w-4 h-4 rounded-full border-2 border-white transition-colors"></div>
             </div>
              <p id="pin-error" class="text-red-300 text-sm h-5 mb-2"></p>
             <div class="grid grid-cols-3 gap-4 text-white text-2xl font-bold">
@@ -148,6 +160,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 002.828 0L21 12M3 12l6.414-6.414a2 2 0 012.828 0L21 12" /></svg>
                 </button>
             </div>
+            <button id="forgot-pin-btn" class="text-white/80 mt-6 text-sm hover:underline">Forgot PIN? Sign Out</button>
         </div>
     </div>
 
@@ -191,7 +204,7 @@
                 <h1 class="text-4xl font-bold text-gradient">AURA</h1>
                 <div class="flex items-center gap-4">
                      <button id="header-avatar-btn" class="w-10 h-10 rounded-full border-2 border-[--border-color] overflow-hidden focus:outline-none focus:ring-2 focus:ring-orange-500">
-                        <img id="header-avatar" class="w-full h-full object-cover" src="https://placehold.co/40x40/fed7aa/7c2d12?text=A" alt="Toggle Navigation">
+                         <img id="header-avatar" class="w-full h-full object-cover" src="https://placehold.co/40x40/fed7aa/7c2d12?text=A" alt="Toggle Navigation">
                      </button>
                 </div>
             </header>
@@ -226,7 +239,7 @@
                                <svg id="theme-icon-light" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                                <svg id="theme-icon-dark" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
                            </button>
-                        </div>
+                         </div>
 
                          <button id="sign-out-btn" class="w-full text-left text-sm text-red-500 hover:text-red-700 dark:hover:text-red-400 mt-4 p-2 rounded-md hover:bg-red-100 dark:hover:bg-red-900/50">Sign Out</button>
                     </div>
@@ -252,11 +265,11 @@
                                     <label for="add-date" class="block text-sm font-medium text-[--text-secondary] mb-1">Date</label>
                                     <input type="text" id="add-date" placeholder="DD/MM/YYYY" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
                                 </div>
-                                 <div>
+                                <div>
                                     <label class="block text-sm font-medium text-[--text-secondary] mb-1">Payment Method</label>
                                     <select id="add-method" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none"><option value="Online">Online</option><option value="Cash">Cash</option></select>
                                 </div>
-                                 <div>
+                                <div>
                                     <label class="block text-sm font-medium text-[--text-secondary] mb-1">Type</label>
                                     <select id="add-type" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none"><option value="expense">Expense</option><option value="income">Income</option></select>
                                 </div>
@@ -363,6 +376,7 @@
                              <h3 class="text-lg font-semibold mb-2">Change Password</h3>
                              <form id="change-password-form" class="space-y-4">
                                  <input type="password" id="new-password" placeholder="New Password" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
+                                 <input type="password" id="confirm-new-password" placeholder="Confirm New Password" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
                                  <button type="submit" class="w-full md:w-auto px-4 py-2 rounded-lg btn-gradient text-white font-semibold">Update Password</button>
                              </form>
                         </div>
@@ -378,7 +392,7 @@
                                          <p class="text-sm text-[--text-secondary]">You haven't added any friends yet.</p>
                                     </div>
                                 </div>
-                                 <div class="card p-4 rounded-xl">
+                                <div class="card p-4 rounded-xl">
                                     <h3 class="text-lg font-semibold mb-2">Incoming Requests</h3>
                                     <div id="incoming-requests-list" class="space-y-2">
                                         <p class="text-sm text-[--text-secondary]">No new friend requests.</p>
@@ -418,9 +432,9 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-orange-300 dark:text-orange-700 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
                                 <h3 class="text-lg font-bold">Select a friend to start chatting</h3>
                                 <p class="text-sm text-[--text-secondary]">Your conversations will appear here.</p>
-                            </div>
+                             </div>
                         </div>
-                    </div>
+                     </div>
                     <div id="data-management" class="page-content hidden card p-6 rounded-xl">
                         <h2 class="text-2xl font-bold mb-4">Data Management</h2>
                         <div class="space-y-6">
@@ -520,7 +534,7 @@
         
         // --- PWA SETUP ---
         function setupPwa() {
-            const logoUrl = "https://i.pinimg.com/1200x/5f/3b/eb/5f3beb777df379dd4b9bb4a85b3ac501.jpg";
+            const logoUrl = "https://i.imgur.com/pY959V7.png";
             document.getElementById('apple-touch-icon').href = logoUrl;
             
             const manifest = {
@@ -532,8 +546,8 @@
                 "theme_color": "#f97316",
                 "description": "Your Personal & Social Finance Tracker",
                 "icons": [
-                    { "src": logoUrl, "sizes": "192x192", "type": "image/jpeg" },
-                    { "src": logoUrl, "sizes": "512x512", "type": "image/jpeg" }
+                    { "src": logoUrl, "sizes": "192x192", "type": "image/png" },
+                    { "src": logoUrl, "sizes": "512x512", "type": "image/png" }
                 ]
             };
             const manifestString = JSON.stringify(manifest);
@@ -543,7 +557,7 @@
 
             if ('serviceWorker' in navigator) {
                 const swContent = `
-                    const CACHE_NAME = 'aura-cache-v2';
+                    const CACHE_NAME = 'aura-cache-v5'; // Incremented cache version
                     const urlsToCache = [
                         '/',
                         'https://cdn.tailwindcss.com',
@@ -551,7 +565,8 @@
                         'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap',
                         'https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js',
                         'https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/plugin/customParseFormat.min.js',
-                        'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'
+                        'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
+                        '${logoUrl}'
                     ];
 
                     self.addEventListener('install', event => {
@@ -625,12 +640,12 @@
             if (user) {
                 const pin = localStorage.getItem('aura-pin');
                  if(pin && isInitialLoad && !sessionStorage.getItem('unlocked')){
-                    authScreen.classList.add('hidden');
-                    appScreen.classList.add('hidden');
-                    document.getElementById('app-lock-screen').style.display = 'flex';
-                } else {
-                    showAppContent(isInitialLoad, oldUser);
-                }
+                     authScreen.classList.add('hidden');
+                     appScreen.classList.add('hidden');
+                     document.getElementById('app-lock-screen').style.display = 'flex';
+                 } else {
+                     showAppContent(isInitialLoad, oldUser);
+                 }
             } else {
                 sessionStorage.removeItem('unlocked');
                 if (transactionChannel) transactionChannel.unsubscribe();
@@ -663,11 +678,9 @@
                 document.getElementById(id).src = avatarUrl || placeholder;
             });
             
-            if (!oldUser && user && !isInitialLoad) { // Only show on new login
-                 showWelcomeScreen(displayName);
-            } else if (isInitialLoad && !sessionStorage.getItem('unlocked')) {
+            if (isInitialLoad && !sessionStorage.getItem('unlocked')) {
                 showWelcomeScreen(displayName);
-            } else { // On subsequent loads or if already unlocked
+            } else { 
                 authScreen.classList.add('hidden');
                 appScreen.classList.remove('hidden');
             }
@@ -678,6 +691,7 @@
             await fetchFriendships();
             listenToTransactions();
             listenToFriendships();
+            listenToMessages(); // Start listening for messages
         }
 
         function showWelcomeScreen(displayName) {
@@ -777,7 +791,7 @@
         
         document.getElementById('sign-out-btn').addEventListener('click', () => {
              sessionStorage.removeItem('unlocked');
-             supabaseClient.auth.signOut()
+              supabaseClient.auth.signOut()
         });
         document.getElementById('copy-user-id').addEventListener('click', () => {
              const userIdInput = document.getElementById('user-id-display');
@@ -788,6 +802,57 @@
              setTimeout(() => feedback.textContent = '', 2000);
         });
 
+        // --- PIN LOCK LOGIC ---
+        const pinDotsContainer = document.getElementById('pin-dots');
+        const pinErrorEl = document.getElementById('pin-error');
+        const appLockScreen = document.getElementById('app-lock-screen');
+        const forgotPinBtn = document.getElementById('forgot-pin-btn');
+
+        forgotPinBtn.addEventListener('click', () => {
+            sessionStorage.removeItem('unlocked');
+            supabaseClient.auth.signOut();
+        });
+        
+        function updatePinDots() {
+            const dots = pinDotsContainer.children;
+            for (let i = 0; i < dots.length; i++) {
+                dots[i].classList.toggle('bg-white', i < pinInput.length);
+            }
+        }
+
+        async function verifyPin() {
+            const storedPin = localStorage.getItem('aura-pin');
+            if (pinInput === storedPin) {
+                appLockScreen.style.display = 'none';
+                await showAppContent(false);
+            } else {
+                pinErrorEl.textContent = 'Incorrect PIN. Try again.';
+                pinDotsContainer.classList.add('shake');
+                setTimeout(() => {
+                    pinInput = '';
+                    updatePinDots();
+                    pinErrorEl.textContent = '';
+                    pinDotsContainer.classList.remove('shake');
+                }, 1000);
+            }
+        }
+        
+        document.querySelectorAll('.pin-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (pinInput.length < 4) {
+                    pinInput += btn.textContent;
+                    updatePinDots();
+                    if (pinInput.length === 4) {
+                        verifyPin();
+                    }
+                }
+            });
+        });
+
+        document.getElementById('pin-backspace').addEventListener('click', () => {
+            pinInput = pinInput.slice(0, -1);
+            updatePinDots();
+        });
 
         // --- NAVIGATION LOGIC ---
         const navToggle = document.getElementById('header-avatar-btn');
@@ -1226,6 +1291,8 @@
         const addFriendForm = document.getElementById('add-friend-form');
         const friendFeedback = document.getElementById('friend-feedback');
         const searchResultsEl = document.getElementById('friend-search-results');
+        const chatForm = document.getElementById('chat-form');
+        const chatMessagesEl = document.getElementById('chat-messages');
         
         async function fetchFriendships() {
             if (!user) return;
@@ -1235,11 +1302,11 @@
             if(error) {
                 console.error('Error fetching friendships:', error);
                  if (error.message.includes('permission denied')) {
-                     document.getElementById('friends-list').innerHTML = '<p class="text-sm text-red-500">Error: Database permissions are not set correctly. Please run the latest SQL script from your Supabase editor to fix this.</p>';
+                      document.getElementById('friends-list').innerHTML = '<p class="text-sm text-red-500">Error: Database permissions are not set correctly. Please run the latest SQL script from your Supabase editor to fix this.</p>';
                  }
-                else if (error.message.includes('function public.get_friendships_with_names() does not exist')) {
-                    document.getElementById('friends-list').innerHTML = '<p class="text-sm text-red-500">Error: The database functions for friends are missing. Please run the social features update script in your Supabase SQL Editor.</p>';
-                }
+                 else if (error.message.includes('function public.get_friendships_with_names() does not exist')) {
+                     document.getElementById('friends-list').innerHTML = '<p class="text-sm text-red-500">Error: The database functions for friends are missing. Please run the social features update script in your Supabase SQL Editor.</p>';
+                 }
                 return;
             }
             friendshipsCache = data || [];
@@ -1335,7 +1402,10 @@
                 el.innerHTML = `
                     <div class="flex items-center gap-2">
                         <img src="${foundUser.avatar_url || placeholder}" class="w-8 h-8 rounded-full object-cover">
-                        <p>${foundUser.display_name}</p>
+                        <div>
+                            <p>${foundUser.display_name}</p>
+                            <p class="text-xs text-[--text-secondary]">${foundUser.id}</p>
+                        </div>
                     </div>
                     <button data-add-id="${foundUser.id}" class="add-friend-btn px-3 py-1 text-xs btn-gradient text-white rounded-full">Add</button>
                 `;
@@ -1350,9 +1420,9 @@
 
             if (error) {
                  if (error.code === '23505') {
-                    alert('You have already sent a request to this user or are already friends.');
+                     alert('You have already sent a request to this user or are already friends.');
                  } else {
-                    alert(`Error: ${error.message}`);
+                     alert(`Error: ${error.message}`);
                  }
             } else {
                 alert('Friend request sent!');
@@ -1411,6 +1481,108 @@
             if (e.target.classList.contains('remove-friend-btn')) handleRemoveFriend(e);
         });
         
+        async function openChat(friend) {
+            currentChatFriend = friend;
+            
+            const friendName = friend.requester_id === user.id ? friend.addressee_name : friend.requester_name;
+            const friendId = friend.requester_id === user.id ? friend.addressee_id : friend.requester_id;
+            const friendAvatar = friend.requester_id === user.id ? friend.addressee_avatar_url : friend.requester_avatar_url;
+
+            document.getElementById('chat-friend-name').textContent = friendName;
+            const placeholder = `https://placehold.co/32x32/fed7aa/7c2d12?text=${friendName.charAt(0)}`;
+            document.getElementById('chat-avatar').src = friendAvatar || placeholder;
+
+            chatPlaceholder.style.display = 'none';
+            chatWindow.style.display = 'flex';
+            if (window.innerWidth < 768) {
+                friendsListContainer.classList.add('hidden');
+            }
+
+            const { data, error } = await supabaseClient.rpc('get_messages', { p_friendship_id: friend.id });
+            if (error) {
+                console.error('Error fetching messages:', error);
+                chatMessagesEl.innerHTML = '<p class="text-center text-red-500">Could not load messages.</p>';
+            } else {
+                messagesCache = data || [];
+                renderMessages();
+            }
+        }
+
+        function renderMessages() {
+            if (!currentChatFriend) return;
+            chatMessagesEl.innerHTML = '';
+            
+            if (messagesCache.length === 0) {
+                chatMessagesEl.innerHTML = '<p class="text-center text-sm text-[--text-secondary]">No messages yet. Say hello!</p>';
+                return;
+            }
+
+            messagesCache.forEach(msg => {
+                const isSent = msg.sender_id === user.id;
+                const bubble = document.createElement('div');
+                bubble.className = `flex ${isSent ? 'justify-end' : 'justify-start'}`;
+                bubble.innerHTML = `
+                    <div class="chat-bubble ${isSent ? 'chat-bubble-sent' : 'chat-bubble-received'}">
+                        <p>${msg.content}</p>
+                        <p class="text-xs opacity-70 mt-1 text-right">${dayjs(msg.created_at).format('h:mm A')}</p>
+                    </div>
+                `;
+                chatMessagesEl.appendChild(bubble);
+            });
+            chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+        }
+
+        async function handleSendMessage(e) {
+            e.preventDefault();
+            if (!currentChatFriend) return;
+            const content = document.getElementById('chat-input').value.trim();
+            if (!content) return;
+            
+            const receiverId = currentChatFriend.requester_id === user.id ? currentChatFriend.addressee_id : currentChatFriend.requester_id;
+            
+            const { error } = await supabaseClient.from('messages').insert({
+                friendship_id: currentChatFriend.id,
+                sender_id: user.id,
+                receiver_id: receiverId,
+                content: content
+            });
+            
+            if (error) {
+                console.error("Error sending message:", error);
+                alert("Could not send message.");
+            } else {
+                chatForm.reset();
+            }
+        }
+        
+        function showNotification(message) {
+            if (Notification.permission !== 'granted') return;
+            const hidePreviews = document.getElementById('hide-previews').checked;
+            const friend = friendshipsCache.find(f => f.requester_id === message.sender_id || f.addressee_id === message.sender_id);
+            if (!friend) return;
+            
+            const friendName = friend.requester_id === user.id ? friend.addressee_name : friend.requester_name;
+            const notificationTitle = `New message from ${friendName}`;
+            const notificationBody = hidePreviews ? 'You have a new message.' : message.content;
+            const friendAvatar = friend.requester_id === user.id ? friend.addressee_avatar_url : friend.requester_avatar_url;
+
+            navigator.serviceWorker.ready.then(registration => {
+                registration.showNotification(notificationTitle, {
+                    body: notificationBody,
+                    icon: friendAvatar || 'https://i.imgur.com/pY959V7.png'
+                });
+            });
+        }
+        
+        chatForm.addEventListener('submit', handleSendMessage);
+        backToFriendsListBtn.addEventListener('click', () => {
+            chatWindow.style.display = 'none';
+            chatPlaceholder.style.display = 'flex';
+            friendsListContainer.classList.remove('hidden');
+            currentChatFriend = null;
+            if (messageChannel) messageChannel.unsubscribe();
+        });
+
         function listenToMessages() {
             if (messageChannel) messageChannel.unsubscribe();
             if (!user) return;
@@ -1428,7 +1600,6 @@
                 })
             .subscribe();
         }
-
         
         // --- PROFILE PAGE LOGIC ---
         const avatarUploadInput = document.getElementById('avatar-upload');
@@ -1437,6 +1608,22 @@
         const profileFeedback = document.getElementById('profile-feedback');
         const appPinForm = document.getElementById('app-pin-form');
         
+        appPinForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const pinInputEl = document.getElementById('app-pin');
+            const newPin = pinInputEl.value;
+            if (/^\d{4}$/.test(newPin)) {
+                localStorage.setItem('aura-pin', newPin);
+                profileFeedback.textContent = 'PIN saved successfully!';
+                profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right text-green-500';
+                pinInputEl.value = '';
+            } else {
+                profileFeedback.textContent = 'PIN must be 4 digits.';
+                profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right text-red-500';
+            }
+            setTimeout(() => profileFeedback.textContent = '', 3000);
+        });
+
         async function handleAvatarUpload(e) {
             if (!user || !e.target.files || e.target.files.length === 0) return;
             const file = e.target.files[0];
@@ -1496,19 +1683,43 @@
         async function handleChangePassword(e) {
              e.preventDefault();
              const newPassword = document.getElementById('new-password').value;
-             if (!newPassword) return;
+             const confirmPassword = document.getElementById('confirm-new-password').value;
+             
+             profileFeedback.textContent = '';
+             profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right';
+
+             if (newPassword.length < 6) {
+                 profileFeedback.textContent = 'Password must be at least 6 characters.';
+                 profileFeedback.classList.add('text-red-500');
+                 setTimeout(() => { profileFeedback.textContent = ''; profileFeedback.classList.remove('text-red-500'); }, 5000);
+                 return;
+             }
+
+             if (newPassword !== confirmPassword) {
+                 profileFeedback.textContent = 'Passwords do not match.';
+                 profileFeedback.classList.add('text-red-500');
+                 setTimeout(() => { profileFeedback.textContent = ''; profileFeedback.classList.remove('text-red-500'); }, 5000);
+                 return;
+             }
 
              const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
              
              if (error) {
-                profileFeedback.textContent = `Error: ${error.message}`;
-                profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right text-red-500';
+                if (error.message.toLowerCase().includes('requires recent authentication')) {
+                     profileFeedback.textContent = 'For security, please sign out and sign in again to change password.';
+                } else {
+                    profileFeedback.textContent = `Error: ${error.message}`;
+                }
+                profileFeedback.classList.add('text-red-500');
              } else {
                 profileFeedback.textContent = 'Password updated successfully!';
-                profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right text-green-500';
+                profileFeedback.classList.add('text-green-500');
                 changePasswordForm.reset();
              }
-             setTimeout(() => profileFeedback.textContent = '', 3000);
+             setTimeout(() => {
+                profileFeedback.textContent = '';
+                profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right';
+             }, 5000);
         }
 
         avatarUploadInput.addEventListener('change', handleAvatarUpload);
