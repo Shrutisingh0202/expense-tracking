@@ -475,7 +475,7 @@
 
             if ('serviceWorker' in navigator) {
                 const swContent = `
-                    const CACHE_NAME = 'aura-cache-v6'; // Incremented cache version
+                    const CACHE_NAME = 'aura-cache-v7'; // Incremented cache version
                     const urlsToCache = [
                         '/',
                         'https://cdn.tailwindcss.com',
@@ -484,8 +484,7 @@
                         'https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js',
                         'https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/plugin/customParseFormat.min.js',
                         'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
-                        '${logoUrl}',
-                        'https://i.imgur.com/pY959V7.png'
+                        '${logoUrl}'
                     ];
 
                     self.addEventListener('install', event => {
@@ -541,11 +540,10 @@
             handleUserSession(session, true);
 
             supabaseClient.auth.onAuthStateChange((_event, session) => {
-                handleUserSession(session, false); // Pass false for subsequent changes
+                handleUserSession(session, false);
             });
         }
         
-        // --- THIS FUNCTION HAS BEEN REWRITTEN TO BE CLEARER AND FIX THE ERROR ---
         async function handleUserSession(session, isInitialLoad = false) {
             const authScreen = document.getElementById('auth-screen');
             const appScreen = document.getElementById('app-screen');
@@ -553,46 +551,32 @@
             const oldUser = user;
             user = session?.user || null;
 
-            // If no user, show login and clear everything.
             if (!user) {
-                sessionStorage.removeItem('unlocked');
-                sessionStorage.removeItem('welcomeShown');
+                sessionStorage.clear();
                 if (transactionChannel) transactionChannel.unsubscribe();
                 transactionsCache = [];
                 appScreen.classList.add('hidden');
                 lockScreen.style.display = 'none';
                 authScreen.classList.remove('hidden');
-                return; // Exit function
+                return;
             }
 
-            // If there IS a user:
-            const pin = localStorage.getItem('aura-pin');
-            const isUnlocked = sessionStorage.getItem('unlocked') === 'true';
-            
-            // This logic detects a fresh login (oldUser was null, now user is not)
             const isFreshLogin = !oldUser && user;
 
-            // Scenario 1: Fresh login, show welcome screen.
             if (isFreshLogin && !isInitialLoad) {
                 const displayName = user.user_metadata?.display_name || 'No Name';
                 showWelcomeAndProceed(displayName);
-                return;
+            } else {
+                const pin = localStorage.getItem('aura-pin');
+                const isUnlocked = sessionStorage.getItem('unlocked') === 'true';
+                if (pin && !isUnlocked) {
+                    authScreen.classList.add('hidden');
+                    appScreen.classList.add('hidden');
+                    lockScreen.style.display = 'flex';
+                } else {
+                    showAppContent();
+                }
             }
-
-            // Scenario 2: PIN exists and is not unlocked yet. Show PIN screen.
-            if (pin && !isUnlocked) {
-                authScreen.classList.add('hidden');
-                appScreen.classList.add('hidden');
-                lockScreen.style.display = 'flex';
-                return;
-            }
-
-            // Scenario 3: Otherwise, show the app content.
-            // This covers cases where:
-            // - It's the initial load and the user is already logged in.
-            // - No pin is set.
-            // - Pin exists and is already unlocked.
-            showAppContent();
         }
 
        async function showAppContent() {
@@ -616,15 +600,12 @@
             document.getElementById('app-lock-screen').style.display = 'none';
 
             sessionStorage.setItem('unlocked', 'true');
-            sessionStorage.setItem('welcomeShown', 'true');
-
 
             await fetchInitialTransactions();
             listenToTransactions();
         }
 
         function showWelcomeAndProceed(displayName) {
-            sessionStorage.setItem('welcomeShown', 'true'); // Set flag immediately
             const welcomeScreen = document.getElementById('welcome-screen');
             const welcomeMessage = document.getElementById('welcome-message');
             document.getElementById('auth-screen').classList.add('hidden');
@@ -640,17 +621,14 @@
                 welcomeScreen.classList.add('opacity-0');
                 setTimeout(() => {
                     welcomeScreen.style.display = 'none';
-
                     const pin = localStorage.getItem('aura-pin');
-                    // After welcome screen fades, show PIN screen if it exists
                     if (pin) {
                         document.getElementById('app-lock-screen').style.display = 'flex';
                     } else {
-                        // Otherwise, show the app
                         showAppContent();
                     }
                 }, 500); // fade out time
-            }, 2000); // <-- This is the display time, set to 2 seconds (2000ms)
+            }, 2000); // 2-second display time
         }
         
         // --- AUTH FORM LOGIC ---
@@ -731,7 +709,7 @@
         });
         
         document.getElementById('sign-out-btn').addEventListener('click', () => {
-             sessionStorage.removeItem('unlocked');
+             sessionStorage.clear();
              supabaseClient.auth.signOut();
         });
         document.getElementById('copy-user-id').addEventListener('click', () => {
@@ -750,7 +728,7 @@
         const forgotPinBtn = document.getElementById('forgot-pin-btn');
 
         forgotPinBtn.addEventListener('click', () => {
-            sessionStorage.removeItem('unlocked');
+            sessionStorage.clear();
             supabaseClient.auth.signOut();
         });
         
@@ -1360,5 +1338,4 @@
     </script>
 </body>
 </html>
-
 
