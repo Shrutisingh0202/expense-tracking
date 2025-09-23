@@ -15,7 +15,7 @@
     <!-- PWA Manifest and Meta Tags -->
     <link id="manifest-link" rel="manifest">
     <meta name="theme-color" content="#f97316">
-    <link id="apple-touch-icon" rel="apple-touch-icon" href="https://instasize.com/p/7ce3d32756aed4ef7eeac0b7dfea49eabd5892fe001f8fc1a255aba10d74b8c4">
+    <link id="apple-touch-icon" rel="apple-touch-icon" href="https://i.imgur.com/r84nO2Q.jpeg">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="AURA">
@@ -80,8 +80,8 @@
         .modal-backdrop { background-color: rgba(0,0,0,0.5); }
         
         .card {
-             background-color: var(--bg-secondary);
-             border: 1px solid var(--border-color);
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
         }
         .nav-link.active {
             background-color: var(--text-gradient-from);
@@ -93,25 +93,7 @@
         .font-cursive {
             font-family: 'Playfair Display', serif;
         }
-        /* Chat bubble styles */
-        .chat-bubble {
-            max-width: 75%;
-            padding: 8px 12px;
-            border-radius: 18px;
-        }
-        .chat-bubble-sent {
-            background-color: #fb923c; /* orange-400 */
-            color: white;
-            border-bottom-right-radius: 4px;
-        }
-        .chat-bubble-received {
-            background-color: var(--bg-tertiary);
-            border-bottom-left-radius: 4px;
-        }
-        html.dark .chat-bubble-sent {
-            background-color: #f97316; /* orange-500 */
-        }
-        
+       
         /* PIN Shake Animation */
         @keyframes shake {
           10%, 90% { transform: translate3d(-1px, 0, 0); }
@@ -128,8 +110,7 @@
 
     <!-- Welcome Screen -->
     <div id="welcome-screen" class="fixed inset-0 z-[60] flex flex-col items-center justify-center transition-opacity duration-500 ease-in-out opacity-0 pointer-events-none" style="background: linear-gradient(to top, #fef08a, #f97316, #dc2626);">
-        <img src="https://i.imgur.com/pY959V7.png" alt="AURA Logo" class="w-32 h-32 rounded-full mb-4 shadow-lg">
-        <h1 id="welcome-message" class="text-5xl font-bold font-cursive italic" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">Hello!</h1>
+        <h1 id="welcome-message" class="text-5xl font-cursive italic" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">Hello!</h1>
     </div>
 
     <!-- App Lock Screen -->
@@ -170,7 +151,7 @@
         <div class="w-full max-w-md">
             <div class="text-center mb-6">
                 <h1 class="text-5xl font-bold text-gradient mb-2">AURA</h1>
-                <p class="text-orange-800 dark:text-orange-200">Your Personal & Social Finance Tracker</p>
+                <p class="text-orange-800 dark:text-orange-200">Your Personal Finance Tracker</p>
             </div>
             <div class="bg-white/50 dark:bg-stone-800/50 backdrop-blur-sm p-8 rounded-2xl shadow-2xl">
                 <form id="auth-form">
@@ -215,14 +196,12 @@
                     <ul class="space-y-2">
                         <li><a href="#" class="nav-link active block rounded-md px-3 py-2" data-target="dashboard">Dashboard</a></li>
                         <li><a href="#" class="nav-link block rounded-md px-3 py-2" data-target="profile">Profile</a></li>
-                        <li><a href="#" class="nav-link block rounded-md px-3 py-2" data-target="jars">Joint Jars</a></li>
-                        <li><a href="#" class="nav-link block rounded-md px-3 py-2" data-target="friends">Friends</a></li>
                         <li><a href="#" class="nav-link block rounded-md px-3 py-2" data-target="data-management">Data</a></li>
                     </ul>
                     <div class="mt-6 pt-4 border-t border-[--border-color]">
                          <div class="flex items-center gap-2 mb-2">
-                            <img id="nav-avatar" class="w-8 h-8 rounded-full bg-[--bg-tertiary] object-cover" src="https://placehold.co/40x40/fed7aa/7c2d12?text=A" alt="Avatar">
-                            <p id="display-name" class="font-bold text-center"></p>
+                             <img id="nav-avatar" class="w-8 h-8 rounded-full bg-[--bg-tertiary] object-cover" src="https://placehold.co/40x40/fed7aa/7c2d12?text=A" alt="Avatar">
+                             <p id="display-name" class="font-bold text-center"></p>
                          </div>
                         <p class="text-xs text-[--text-secondary] mb-2">Your User ID:</p>
                         <div class="flex items-center bg-[--bg-primary] p-2 rounded-lg">
@@ -234,11 +213,11 @@
                          <p id="copy-feedback" class="text-xs text-green-500 mt-1 h-4"></p>
                          
                          <div class="flex justify-between items-center mt-4 pt-4 border-t border-[--border-color]">
-                            <p class="text-sm">Toggle Theme</p>
-                            <button id="theme-toggle-btn" class="p-2 rounded-lg bg-[--bg-secondary] border border-[--border-color]">
-                               <svg id="theme-icon-light" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                               <svg id="theme-icon-dark" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
-                           </button>
+                             <p class="text-sm">Toggle Theme</p>
+                             <button id="theme-toggle-btn" class="p-2 rounded-lg bg-[--bg-secondary] border border-[--border-color]">
+                                 <svg id="theme-icon-light" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                                 <svg id="theme-icon-dark" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                            </button>
                          </div>
 
                          <button id="sign-out-btn" class="w-full text-left text-sm text-red-500 hover:text-red-700 dark:hover:text-red-400 mt-4 p-2 rounded-md hover:bg-red-100 dark:hover:bg-red-900/50">Sign Out</button>
@@ -332,129 +311,71 @@
 
                     <!-- Other Pages -->
                      <div id="profile" class="page-content hidden card p-6 rounded-xl space-y-6">
-                        <h2 class="text-2xl font-bold">My Profile & Settings</h2>
-                        
-                        <!-- Profile Details -->
-                        <div class="card p-4 rounded-xl">
-                            <div class="flex flex-col sm:flex-row items-center gap-4">
-                                <div class="relative">
-                                    <img id="profile-avatar" class="w-24 h-24 rounded-full bg-[--bg-tertiary] object-cover" src="https://placehold.co/96x96/fed7aa/7c2d12?text=A" alt="Avatar">
-                                    <label for="avatar-upload" class="absolute bottom-0 right-0 bg-white dark:bg-stone-700 p-1.5 rounded-full cursor-pointer hover:bg-gray-200 border border-[--border-color]">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                                    </label>
-                                    <input type="file" id="avatar-upload" class="hidden" accept="image/png, image/jpeg">
-                                </div>
-                                <div class="flex-1 text-center sm:text-left">
-                                    <p class="text-sm text-[--text-secondary]">Email</p>
-                                    <p id="profile-email" class="font-semibold"></p>
-                                    <form id="update-name-form" class="mt-2 flex items-center gap-2">
-                                        <input type="text" id="profile-name" placeholder="Display Name" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
-                                        <button type="submit" class="px-3 py-2 text-sm rounded-lg btn-gradient text-white font-semibold">Save</button>
-                                    </form>
-                                </div>
-                            </div>
-                             <p id="profile-feedback" class="text-sm mt-2 h-5 text-center sm:text-right"></p>
-                        </div>
-
-                        <!-- Security Settings -->
-                        <div class="card p-4 rounded-xl">
-                            <h3 class="text-lg font-semibold mb-2">Security & Privacy</h3>
-                            <div class="space-y-4">
-                                <form id="app-pin-form" class="flex flex-col sm:flex-row items-center gap-2">
-                                     <input type="text" id="app-pin" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="Set 4-digit App PIN" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none">
-                                     <button type="submit" class="w-full sm:w-auto px-4 py-2 rounded-lg btn-gradient text-white font-semibold">Save PIN</button>
-                                </form>
-                                <div class="flex items-center justify-between">
-                                    <label for="hide-previews" class="text-sm">Hide message previews in notifications</label>
-                                    <input type="checkbox" id="hide-previews" class="h-5 w-5 rounded text-orange-500 focus:ring-orange-500">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Change Password -->
-                        <div class="card p-4 rounded-xl">
-                             <h3 class="text-lg font-semibold mb-2">Change Password</h3>
-                             <form id="change-password-form" class="space-y-4">
-                                 <input type="password" id="new-password" placeholder="New Password" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
-                                 <input type="password" id="confirm-new-password" placeholder="Confirm New Password" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
-                                 <button type="submit" class="w-full md:w-auto px-4 py-2 rounded-lg btn-gradient text-white font-semibold">Update Password</button>
-                             </form>
-                        </div>
-                     </div>
-                     <div id="jars" class="page-content hidden card p-6 rounded-xl"><h2 class="text-2xl font-bold">Joint Jars</h2><p class="text-[--text-secondary] mt-4">Feature coming soon! Once you have friends, you can create joint savings jars here.</p></div>
-                     <div id="friends" class="page-content hidden card p-6 rounded-xl space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <!-- Friends List & Requests -->
-                            <div class="md:col-span-1 space-y-6">
-                                <div class="card p-4 rounded-xl">
-                                    <h3 class="text-lg font-semibold mb-2">My Friends</h3>
-                                    <div id="friends-list" class="space-y-2">
-                                         <p class="text-sm text-[--text-secondary]">You haven't added any friends yet.</p>
-                                    </div>
-                                </div>
-                                <div class="card p-4 rounded-xl">
-                                    <h3 class="text-lg font-semibold mb-2">Incoming Requests</h3>
-                                    <div id="incoming-requests-list" class="space-y-2">
-                                        <p class="text-sm text-[--text-secondary]">No new friend requests.</p>
-                                    </div>
-                                </div>
-                                <div class="card p-4 rounded-xl">
-                                    <h3 class="text-lg font-semibold mb-2">Find Friends</h3>
-                                    <p class="text-sm text-[--text-secondary] mb-3">Search for users by their Display Name or User ID.</p>
-                                    <form id="add-friend-form" class="flex items-center gap-2 mb-4">
-                                        <input type="text" id="add-friend-name" placeholder="Name or User ID" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
-                                        <button type="submit" class="px-4 py-2 rounded-lg btn-gradient text-white font-semibold flex-shrink-0">Search</button>
-                                    </form>
-                                    <div id="friend-search-results" class="space-y-2"></div>
-                                    <p id="friend-feedback" class="text-sm mt-2 h-5"></p>
-                                </div>
-                            </div>
-                             <!-- Chat Window -->
-                            <div id="chat-window" class="md:col-span-2 card rounded-xl flex flex-col" style="display: none;">
-                                <div class="flex items-center gap-2 p-3 border-b border-[--border-color]">
-                                    <button id="back-to-friends-list" class="p-2 rounded-full hover:bg-[--bg-tertiary] md:hidden">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-                                    </button>
-                                    <img id="chat-avatar" class="w-8 h-8 rounded-full" src="">
-                                    <h3 id="chat-friend-name" class="font-bold"></h3>
-                                </div>
-                                <div id="chat-messages" class="flex-1 p-4 space-y-4 overflow-y-auto">
-                                    <!-- Messages will appear here -->
-                                </div>
-                                <form id="chat-form" class="p-3 border-t border-[--border-color] flex items-center gap-2">
-                                    <input type="text" id="chat-input" placeholder="Type a message..." class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-full py-2 px-4 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
-                                    <button type="submit" class="p-2 rounded-full btn-gradient text-white">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
-                                    </button>
-                                </form>
-                            </div>
-                             <div id="chat-placeholder" class="md:col-span-2 card rounded-xl flex flex-col items-center justify-center text-center p-8">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-orange-300 dark:text-orange-700 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
-                                <h3 class="text-lg font-bold">Select a friend to start chatting</h3>
-                                <p class="text-sm text-[--text-secondary]">Your conversations will appear here.</p>
+                         <h2 class="text-2xl font-bold">My Profile & Settings</h2>
+                         
+                         <!-- Profile Details -->
+                         <div class="card p-4 rounded-xl">
+                             <div class="flex flex-col sm:flex-row items-center gap-4">
+                                 <div class="relative">
+                                     <img id="profile-avatar" class="w-24 h-24 rounded-full bg-[--bg-tertiary] object-cover" src="https://placehold.co/96x96/fed7aa/7c2d12?text=A" alt="Avatar">
+                                     <label for="avatar-upload" class="absolute bottom-0 right-0 bg-white dark:bg-stone-700 p-1.5 rounded-full cursor-pointer hover:bg-gray-200 border border-[--border-color]">
+                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                     </label>
+                                     <input type="file" id="avatar-upload" class="hidden" accept="image/png, image/jpeg">
+                                 </div>
+                                 <div class="flex-1 text-center sm:text-left">
+                                     <p class="text-sm text-[--text-secondary]">Email</p>
+                                     <p id="profile-email" class="font-semibold"></p>
+                                     <form id="update-name-form" class="mt-2 flex items-center gap-2">
+                                         <input type="text" id="profile-name" placeholder="Display Name" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
+                                         <button type="submit" class="px-3 py-2 text-sm rounded-lg btn-gradient text-white font-semibold">Save</button>
+                                     </form>
+                                 </div>
                              </div>
-                        </div>
-                     </div>
+                              <p id="profile-feedback" class="text-sm mt-2 h-5 text-center sm:text-right"></p>
+                         </div>
+
+                         <!-- Security Settings -->
+                         <div class="card p-4 rounded-xl">
+                             <h3 class="text-lg font-semibold mb-2">Security & Privacy</h3>
+                             <div class="space-y-4">
+                                 <form id="app-pin-form" class="flex flex-col sm:flex-row items-center gap-2">
+                                      <input type="text" id="app-pin" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="Set 4-digit App PIN" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none">
+                                      <button type="submit" class="w-full sm:w-auto px-4 py-2 rounded-lg btn-gradient text-white font-semibold">Save PIN</button>
+                                 </form>
+                             </div>
+                         </div>
+
+                         <!-- Change Password -->
+                         <div class="card p-4 rounded-xl">
+                              <h3 class="text-lg font-semibold mb-2">Change Password</h3>
+                              <form id="change-password-form" class="space-y-4">
+                                  <input type="password" id="new-password" placeholder="New Password" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
+                                  <input type="password" id="confirm-new-password" placeholder="Confirm New Password" class="w-full bg-[--bg-tertiary] text-[--text-primary] rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
+                                  <button type="submit" class="w-full md:w-auto px-4 py-2 rounded-lg btn-gradient text-white font-semibold">Update Password</button>
+                              </form>
+                         </div>
+                    </div>
                     <div id="data-management" class="page-content hidden card p-6 rounded-xl">
-                        <h2 class="text-2xl font-bold mb-4">Data Management</h2>
-                        <div class="space-y-6">
-                            <!-- Import -->
-                            <div>
-                                <h3 class="text-lg font-semibold mb-2">Import Data</h3>
-                                <p class="text-sm text-[--text-secondary] mb-3">Import transactions and monthly summaries from a JSON file. This will update existing entries and add new ones.</p>
-                                <div class="flex items-center gap-4">
-                                    <input type="file" id="import-file-input" accept=".json" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"/>
-                                    <button id="import-btn" class="px-4 py-2 rounded-lg btn-gradient text-white font-semibold flex-shrink-0">Import</button>
-                                </div>
-                                <p id="import-feedback" class="text-sm mt-2 h-5"></p>
-                            </div>
-                            <!-- Export -->
-                            <div>
-                                <h3 class="text-lg font-semibold mb-2">Export Data</h3>
-                                <p class="text-sm text-[--text-secondary] mb-3">Export all of your transactions and monthly summaries to a JSON backup file.</p>
-                                <button id="export-btn" class="px-4 py-2 rounded-lg btn-gradient text-white font-semibold">Export All My Data</button>
-                            </div>
-                        </div>
+                         <h2 class="text-2xl font-bold mb-4">Data Management</h2>
+                         <div class="space-y-6">
+                             <!-- Import -->
+                             <div>
+                                 <h3 class="text-lg font-semibold mb-2">Import Data</h3>
+                                 <p class="text-sm text-[--text-secondary] mb-3">Import transactions and monthly summaries from a JSON file. This will update existing entries and add new ones.</p>
+                                 <div class="flex items-center gap-4">
+                                     <input type="file" id="import-file-input" accept=".json" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"/>
+                                     <button id="import-btn" class="px-4 py-2 rounded-lg btn-gradient text-white font-semibold flex-shrink-0">Import</button>
+                                 </div>
+                                 <p id="import-feedback" class="text-sm mt-2 h-5"></p>
+                             </div>
+                             <!-- Export -->
+                             <div>
+                                 <h3 class="text-lg font-semibold mb-2">Export Data</h3>
+                                 <p class="text-sm text-[--text-secondary] mb-3">Export all of your transactions and monthly summaries to a JSON backup file.</p>
+                                 <button id="export-btn" class="px-4 py-2 rounded-lg btn-gradient text-white font-semibold">Export All My Data</button>
+                             </div>
+                         </div>
                     </div>
                 </main>
             </div>
@@ -505,15 +426,12 @@
         const supabaseUrl = 'https://ahdsjmblyfklicnjlndt.supabase.co'; 
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoZHNqbWJseWZrbGljbmpsbmR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzODIzMjIsImV4cCI6MjA3Mzk1ODMyMn0.jyoK7mllXzd6NXh5bJOIoJVT3MTyzqbu7M5YKQKpyMo';
         
-        let supabaseClient, user = null, transactionChannel = null, friendshipChannel = null, messageChannel = null;
+        let supabaseClient, user = null, transactionChannel = null;
         let transactionsCache = [];
-        let friendshipsCache = [];
-        let messagesCache = [];
         let currentDisplayDate = dayjs();
         let isLoginMode = true;
         let viewScope = 'month'; // 'month' or 'day'
         let transactionToDeleteId = null;
-        let currentChatFriend = null;
         let pinInput = '';
         
         dayjs.extend(dayjs_plugin_customParseFormat);
@@ -534,7 +452,7 @@
         
         // --- PWA SETUP ---
         function setupPwa() {
-            const logoUrl = "https://i.imgur.com/pY959V7.png";
+            const logoUrl = "https://i.imgur.com/r84nO2Q.jpeg";
             document.getElementById('apple-touch-icon').href = logoUrl;
             
             const manifest = {
@@ -544,7 +462,7 @@
                 "display": "standalone",
                 "background_color": "#fff7ed",
                 "theme_color": "#f97316",
-                "description": "Your Personal & Social Finance Tracker",
+                "description": "Your Personal Finance Tracker",
                 "icons": [
                     { "src": logoUrl, "sizes": "192x192", "type": "image/png" },
                     { "src": logoUrl, "sizes": "512x512", "type": "image/png" }
@@ -557,7 +475,7 @@
 
             if ('serviceWorker' in navigator) {
                 const swContent = `
-                    const CACHE_NAME = 'aura-cache-v5'; // Incremented cache version
+                    const CACHE_NAME = 'aura-cache-v6'; // Incremented cache version
                     const urlsToCache = [
                         '/',
                         'https://cdn.tailwindcss.com',
@@ -566,7 +484,8 @@
                         'https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js',
                         'https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/plugin/customParseFormat.min.js',
                         'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
-                        '${logoUrl}'
+                        '${logoUrl}',
+                        'https://i.imgur.com/pY959V7.png'
                     ];
 
                     self.addEventListener('install', event => {
@@ -574,7 +493,7 @@
                             caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
                         );
                     });
-                     self.addEventListener('activate', event => {
+                      self.addEventListener('activate', event => {
                         event.waitUntil(
                             caches.keys().then(cacheNames => {
                                 return Promise.all(
@@ -590,11 +509,6 @@
                                 return response || fetch(event.request);
                             })
                         );
-                    });
-
-                     self.addEventListener('notificationclick', event => {
-                        event.notification.close();
-                        event.waitUntil(clients.openWindow('/'));
                     });
                 `;
                 const swBlob = new Blob([swContent], {type: 'application/javascript'});
@@ -613,62 +527,81 @@
         // --- INITIALIZATION ---
         function initializeSupabase() {
             if (!supabaseUrl.startsWith('https://') || !supabaseKey.startsWith('ey')) {
-                 document.getElementById('auth-error').textContent = 'Supabase credentials are not set.';
-                 return;
+                document.getElementById('auth-error').textContent = 'Supabase credentials are not set.';
+                return;
             }
             try {
                 supabaseClient = createClient(supabaseUrl, supabaseKey);
                 setupAuthObserver();
             } catch (error) { console.error("Supabase init failed:", error); }
         }
-        
+
         async function setupAuthObserver() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             handleUserSession(session, true);
 
             supabaseClient.auth.onAuthStateChange((_event, session) => {
-                handleUserSession(session);
+                handleUserSession(session, false); // Pass false for subsequent changes
             });
         }
         
+        // --- THIS FUNCTION HAS BEEN REWRITTEN TO BE CLEARER AND FIX THE ERROR ---
         async function handleUserSession(session, isInitialLoad = false) {
             const authScreen = document.getElementById('auth-screen');
             const appScreen = document.getElementById('app-screen');
+            const lockScreen = document.getElementById('app-lock-screen');
             const oldUser = user;
             user = session?.user || null;
 
-            if (user) {
-                const pin = localStorage.getItem('aura-pin');
-                 if(pin && isInitialLoad && !sessionStorage.getItem('unlocked')){
-                     authScreen.classList.add('hidden');
-                     appScreen.classList.add('hidden');
-                     document.getElementById('app-lock-screen').style.display = 'flex';
-                 } else {
-                     showAppContent(isInitialLoad, oldUser);
-                 }
-            } else {
+            // If no user, show login and clear everything.
+            if (!user) {
                 sessionStorage.removeItem('unlocked');
+                sessionStorage.removeItem('welcomeShown');
                 if (transactionChannel) transactionChannel.unsubscribe();
-                if (friendshipChannel) friendshipChannel.unsubscribe();
-                if (messageChannel) messageChannel.unsubscribe();
-                transactionsCache = []; 
-                friendshipsCache = [];
-                messagesCache = [];
+                transactionsCache = [];
                 appScreen.classList.add('hidden');
-                document.getElementById('app-lock-screen').style.display = 'none';
+                lockScreen.style.display = 'none';
                 authScreen.classList.remove('hidden');
+                return; // Exit function
             }
+
+            // If there IS a user:
+            const pin = localStorage.getItem('aura-pin');
+            const isUnlocked = sessionStorage.getItem('unlocked') === 'true';
+            
+            // This logic detects a fresh login (oldUser was null, now user is not)
+            const isFreshLogin = !oldUser && user;
+
+            // Scenario 1: Fresh login, show welcome screen.
+            if (isFreshLogin && !isInitialLoad) {
+                const displayName = user.user_metadata?.display_name || 'No Name';
+                showWelcomeAndProceed(displayName);
+                return;
+            }
+
+            // Scenario 2: PIN exists and is not unlocked yet. Show PIN screen.
+            if (pin && !isUnlocked) {
+                authScreen.classList.add('hidden');
+                appScreen.classList.add('hidden');
+                lockScreen.style.display = 'flex';
+                return;
+            }
+
+            // Scenario 3: Otherwise, show the app content.
+            // This covers cases where:
+            // - It's the initial load and the user is already logged in.
+            // - No pin is set.
+            // - Pin exists and is already unlocked.
+            showAppContent();
         }
 
-        async function showAppContent(isInitialLoad = false, oldUser = null) {
+       async function showAppContent() {
             const authScreen = document.getElementById('auth-screen');
             const appScreen = document.getElementById('app-screen');
-            const welcomeScreen = document.getElementById('welcome-screen');
-            const welcomeMessage = document.getElementById('welcome-message');
 
             const displayName = user.user_metadata?.display_name || 'No Name';
             const avatarUrl = user.user_metadata?.avatar_url;
-            
+
             document.getElementById('user-id-display').value = user.id;
             document.getElementById('display-name').textContent = displayName;
             document.getElementById('profile-email').textContent = user.email;
@@ -677,39 +610,47 @@
             [ 'nav-avatar', 'profile-avatar', 'header-avatar' ].forEach(id => {
                 document.getElementById(id).src = avatarUrl || placeholder;
             });
-            
-            if (isInitialLoad && !sessionStorage.getItem('unlocked')) {
-                showWelcomeScreen(displayName);
-            } else { 
-                authScreen.classList.add('hidden');
-                appScreen.classList.remove('hidden');
-            }
-             sessionStorage.setItem('unlocked', 'true');
+
+            authScreen.classList.add('hidden');
+            appScreen.classList.remove('hidden');
+            document.getElementById('app-lock-screen').style.display = 'none';
+
+            sessionStorage.setItem('unlocked', 'true');
+            sessionStorage.setItem('welcomeShown', 'true');
 
 
             await fetchInitialTransactions();
-            await fetchFriendships();
             listenToTransactions();
-            listenToFriendships();
-            listenToMessages(); // Start listening for messages
         }
 
-        function showWelcomeScreen(displayName) {
+        function showWelcomeAndProceed(displayName) {
+            sessionStorage.setItem('welcomeShown', 'true'); // Set flag immediately
             const welcomeScreen = document.getElementById('welcome-screen');
             const welcomeMessage = document.getElementById('welcome-message');
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('app-screen').classList.add('hidden');
+            document.getElementById('app-lock-screen').style.display = 'none';
+
             welcomeMessage.textContent = `Hello, ${displayName}!`;
             welcomeScreen.style.display = 'flex';
-            void welcomeScreen.offsetWidth;
+            void welcomeScreen.offsetWidth; // Force reflow
             welcomeScreen.classList.remove('opacity-0');
+
             setTimeout(() => {
                 welcomeScreen.classList.add('opacity-0');
                 setTimeout(() => {
                     welcomeScreen.style.display = 'none';
-                    document.getElementById('app-screen').classList.remove('hidden');
-                }, 500);
-            }, 2000);
+
+                    const pin = localStorage.getItem('aura-pin');
+                    // After welcome screen fades, show PIN screen if it exists
+                    if (pin) {
+                        document.getElementById('app-lock-screen').style.display = 'flex';
+                    } else {
+                        // Otherwise, show the app
+                        showAppContent();
+                    }
+                }, 500); // fade out time
+            }, 2000); // <-- This is the display time, set to 2 seconds (2000ms)
         }
         
         // --- AUTH FORM LOGIC ---
@@ -776,9 +717,9 @@
                 }
                 if (response.error) throw response.error;
                  if (!isLoginMode && response.data.user) {
-                    alert('Sign up successful! Please check your email to confirm your account.');
-                    toggleAuthMode();
-                }
+                     alert('Sign up successful! Please check your email to confirm your account.');
+                     toggleAuthMode();
+                 }
 
             } catch (error) {
                 authError.textContent = error.message;
@@ -791,7 +732,7 @@
         
         document.getElementById('sign-out-btn').addEventListener('click', () => {
              sessionStorage.removeItem('unlocked');
-              supabaseClient.auth.signOut()
+             supabaseClient.auth.signOut();
         });
         document.getElementById('copy-user-id').addEventListener('click', () => {
              const userIdInput = document.getElementById('user-id-display');
@@ -824,7 +765,7 @@
             const storedPin = localStorage.getItem('aura-pin');
             if (pinInput === storedPin) {
                 appLockScreen.style.display = 'none';
-                await showAppContent(false);
+                await showAppContent();
             } else {
                 pinErrorEl.textContent = 'Incorrect PIN. Try again.';
                 pinDotsContainer.classList.add('shake');
@@ -922,7 +863,7 @@
             }
             
             if(error && error.code !== 'PGRST116'){
-                console.error(`Error fetching summary for ${monthKey}:`, error);
+                 console.error(`Error fetching summary for ${monthKey}:`, error);
             }
 
             const prevMonthDate = monthDate.subtract(1, 'month');
@@ -1282,325 +1223,6 @@
         importBtn.addEventListener('click', handleImport);
         exportBtn.addEventListener('click', handleExport);
         
-        // --- FRIENDS & CHAT LOGIC ---
-        const friendsPage = document.getElementById('friends');
-        const chatWindow = document.getElementById('chat-window');
-        const chatPlaceholder = document.getElementById('chat-placeholder');
-        const friendsListContainer = document.querySelector('.md\\:col-span-1');
-        const backToFriendsListBtn = document.getElementById('back-to-friends-list');
-        const addFriendForm = document.getElementById('add-friend-form');
-        const friendFeedback = document.getElementById('friend-feedback');
-        const searchResultsEl = document.getElementById('friend-search-results');
-        const chatForm = document.getElementById('chat-form');
-        const chatMessagesEl = document.getElementById('chat-messages');
-        
-        async function fetchFriendships() {
-            if (!user) return;
-
-             const { data, error } = await supabaseClient.rpc('get_friendships_with_names');
-            
-            if(error) {
-                console.error('Error fetching friendships:', error);
-                 if (error.message.includes('permission denied')) {
-                      document.getElementById('friends-list').innerHTML = '<p class="text-sm text-red-500">Error: Database permissions are not set correctly. Please run the latest SQL script from your Supabase editor to fix this.</p>';
-                 }
-                 else if (error.message.includes('function public.get_friendships_with_names() does not exist')) {
-                     document.getElementById('friends-list').innerHTML = '<p class="text-sm text-red-500">Error: The database functions for friends are missing. Please run the social features update script in your Supabase SQL Editor.</p>';
-                 }
-                return;
-            }
-            friendshipsCache = data || [];
-            renderFriends();
-        }
-        
-        function listenToFriendships() {
-            if (friendshipChannel) friendshipChannel.unsubscribe();
-            if (!user) return;
-            
-            friendshipChannel = supabaseClient.channel('public:friendships')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'friendships' }, 
-                (payload) => {
-                    fetchFriendships();
-                })
-                .subscribe();
-        }
-
-        function renderFriends() {
-            if (!user) return;
-            const friendsListEl = document.getElementById('friends-list');
-            const incomingRequestsListEl = document.getElementById('incoming-requests-list');
-
-            const friends = friendshipsCache.filter(f => f.status === 'accepted');
-            const incomingRequests = friendshipsCache.filter(f => f.status === 'pending' && f.addressee_id === user.id);
-            
-            if (friends.length === 0) {
-                friendsListEl.innerHTML = '<p class="text-sm text-[--text-secondary]">You haven\'t added any friends yet.</p>';
-            } else {
-                friendsListEl.innerHTML = '';
-                friends.forEach(f => {
-                    const friendName = f.requester_id === user.id ? f.addressee_name : f.requester_name;
-                    const el = document.createElement('div');
-                    el.className = 'flex items-center justify-between card p-2 rounded-lg';
-                    el.innerHTML = `
-                        <button data-friendship-id="${f.id}" class="start-chat-btn text-left flex-1 font-semibold">${friendName}</button>
-                        <button data-friendship-id="${f.id}" class="remove-friend-btn px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200">Remove</button>
-                    `;
-                    friendsListEl.appendChild(el);
-                });
-            }
-
-            if (incomingRequests.length === 0) {
-                incomingRequestsListEl.innerHTML = '<p class="text-sm text-[--text-secondary]">No new friend requests.</p>';
-            } else {
-                incomingRequestsListEl.innerHTML = '';
-                incomingRequests.forEach(req => {
-                    const el = document.createElement('div');
-                    el.className = 'flex items-center justify-between card p-2 rounded-lg';
-                    el.innerHTML = `
-                        <div>
-                            <p class="text-sm font-semibold">${req.requester_name}</p>
-                        </div>
-                        <div class="flex gap-2">
-                           <button data-friendship-id="${req.id}" class="accept-request-btn px-2 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200">Accept</button>
-                           <button data-friendship-id="${req.id}" class="decline-request-btn px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200">Decline</button>
-                        </div>
-                    `;
-                    incomingRequestsListEl.appendChild(el);
-                });
-            }
-        }
-        
-        async function handleFriendSearch(e) {
-            e.preventDefault();
-            if (!user) return;
-            const searchTerm = document.getElementById('add-friend-name').value.trim();
-            if (!searchTerm) return;
-
-            friendFeedback.textContent = 'Searching...';
-            friendFeedback.className = 'text-sm mt-2 h-5 text-orange-500';
-            searchResultsEl.innerHTML = '';
-
-            const { data, error } = await supabaseClient.rpc('search_users', { search_term: searchTerm });
-
-            if (error) {
-                friendFeedback.textContent = 'Error finding users.';
-                friendFeedback.className = 'text-sm mt-2 h-5 text-red-500';
-                return;
-            }
-
-            if (data.length === 0) {
-                friendFeedback.textContent = 'No users found.';
-                 friendFeedback.className = 'text-sm mt-2 h-5 text-orange-500';
-                return;
-            }
-
-            friendFeedback.textContent = '';
-            data.forEach(foundUser => {
-                const el = document.createElement('div');
-                el.className = 'flex items-center justify-between card p-2 rounded-lg';
-                const placeholder = `https://placehold.co/32x32/fed7aa/7c2d12?text=${foundUser.display_name.charAt(0)}`;
-                el.innerHTML = `
-                    <div class="flex items-center gap-2">
-                        <img src="${foundUser.avatar_url || placeholder}" class="w-8 h-8 rounded-full object-cover">
-                        <div>
-                            <p>${foundUser.display_name}</p>
-                            <p class="text-xs text-[--text-secondary]">${foundUser.id}</p>
-                        </div>
-                    </div>
-                    <button data-add-id="${foundUser.id}" class="add-friend-btn px-3 py-1 text-xs btn-gradient text-white rounded-full">Add</button>
-                `;
-                searchResultsEl.appendChild(el);
-            });
-        }
-
-        async function handleSendFriendRequest(addresseeId) {
-             const { error } = await supabaseClient
-                .from('friendships')
-                .insert({ requester_id: user.id, addressee_id: addresseeId });
-
-            if (error) {
-                 if (error.code === '23505') {
-                     alert('You have already sent a request to this user or are already friends.');
-                 } else {
-                     alert(`Error: ${error.message}`);
-                 }
-            } else {
-                alert('Friend request sent!');
-            }
-        }
-
-
-        async function handleRequestAction(e, newStatus) {
-            if (!user || !e.target.dataset.friendshipId) return;
-            const friendshipId = e.target.dataset.friendshipId;
-
-            const { error } = await supabaseClient
-                .from('friendships')
-                .update({ status: newStatus })
-                .eq('id', friendshipId)
-                .eq('addressee_id', user.id);
-            
-            if (error) {
-                console.error(`Error ${newStatus === 'accepted' ? 'accepting' : 'declining'} request:`, error);
-                alert('Could not process request.');
-            }
-        }
-        
-        async function handleRemoveFriend(e) {
-             if (!user || !e.target.dataset.friendshipId) return;
-             const friendshipId = e.target.dataset.friendshipId;
-             const { error } = await supabaseClient
-                .from('friendships')
-                .delete()
-                .eq('id', friendshipId);
-             if (error) {
-                console.error('Error removing friend:', error);
-                alert('Could not remove friend.');
-             }
-        }
-
-        addFriendForm.addEventListener('submit', handleFriendSearch);
-        searchResultsEl.addEventListener('click', (e) => {
-            if (e.target.classList.contains('add-friend-btn')) {
-                const addresseeId = e.target.dataset.addId;
-                handleSendFriendRequest(addresseeId);
-                e.target.textContent = 'Sent';
-                e.target.disabled = true;
-            }
-        });
-        
-        friendsPage.addEventListener('click', (e) => {
-            const chatBtn = e.target.closest('.start-chat-btn');
-            if (chatBtn) {
-                const friendshipId = parseInt(chatBtn.dataset.friendshipId, 10);
-                const friend = friendshipsCache.find(f => f.id === friendshipId);
-                if (friend) openChat(friend);
-            }
-             if (e.target.classList.contains('accept-request-btn')) handleRequestAction(e, 'accepted');
-            if (e.target.classList.contains('decline-request-btn')) handleRequestAction(e, 'declined');
-            if (e.target.classList.contains('remove-friend-btn')) handleRemoveFriend(e);
-        });
-        
-        async function openChat(friend) {
-            currentChatFriend = friend;
-            
-            const friendName = friend.requester_id === user.id ? friend.addressee_name : friend.requester_name;
-            const friendId = friend.requester_id === user.id ? friend.addressee_id : friend.requester_id;
-            const friendAvatar = friend.requester_id === user.id ? friend.addressee_avatar_url : friend.requester_avatar_url;
-
-            document.getElementById('chat-friend-name').textContent = friendName;
-            const placeholder = `https://placehold.co/32x32/fed7aa/7c2d12?text=${friendName.charAt(0)}`;
-            document.getElementById('chat-avatar').src = friendAvatar || placeholder;
-
-            chatPlaceholder.style.display = 'none';
-            chatWindow.style.display = 'flex';
-            if (window.innerWidth < 768) {
-                friendsListContainer.classList.add('hidden');
-            }
-
-            const { data, error } = await supabaseClient.rpc('get_messages', { p_friendship_id: friend.id });
-            if (error) {
-                console.error('Error fetching messages:', error);
-                chatMessagesEl.innerHTML = '<p class="text-center text-red-500">Could not load messages.</p>';
-            } else {
-                messagesCache = data || [];
-                renderMessages();
-            }
-        }
-
-        function renderMessages() {
-            if (!currentChatFriend) return;
-            chatMessagesEl.innerHTML = '';
-            
-            if (messagesCache.length === 0) {
-                chatMessagesEl.innerHTML = '<p class="text-center text-sm text-[--text-secondary]">No messages yet. Say hello!</p>';
-                return;
-            }
-
-            messagesCache.forEach(msg => {
-                const isSent = msg.sender_id === user.id;
-                const bubble = document.createElement('div');
-                bubble.className = `flex ${isSent ? 'justify-end' : 'justify-start'}`;
-                bubble.innerHTML = `
-                    <div class="chat-bubble ${isSent ? 'chat-bubble-sent' : 'chat-bubble-received'}">
-                        <p>${msg.content}</p>
-                        <p class="text-xs opacity-70 mt-1 text-right">${dayjs(msg.created_at).format('h:mm A')}</p>
-                    </div>
-                `;
-                chatMessagesEl.appendChild(bubble);
-            });
-            chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
-        }
-
-        async function handleSendMessage(e) {
-            e.preventDefault();
-            if (!currentChatFriend) return;
-            const content = document.getElementById('chat-input').value.trim();
-            if (!content) return;
-            
-            const receiverId = currentChatFriend.requester_id === user.id ? currentChatFriend.addressee_id : currentChatFriend.requester_id;
-            
-            const { error } = await supabaseClient.from('messages').insert({
-                friendship_id: currentChatFriend.id,
-                sender_id: user.id,
-                receiver_id: receiverId,
-                content: content
-            });
-            
-            if (error) {
-                console.error("Error sending message:", error);
-                alert("Could not send message.");
-            } else {
-                chatForm.reset();
-            }
-        }
-        
-        function showNotification(message) {
-            if (Notification.permission !== 'granted') return;
-            const hidePreviews = document.getElementById('hide-previews').checked;
-            const friend = friendshipsCache.find(f => f.requester_id === message.sender_id || f.addressee_id === message.sender_id);
-            if (!friend) return;
-            
-            const friendName = friend.requester_id === user.id ? friend.addressee_name : friend.requester_name;
-            const notificationTitle = `New message from ${friendName}`;
-            const notificationBody = hidePreviews ? 'You have a new message.' : message.content;
-            const friendAvatar = friend.requester_id === user.id ? friend.addressee_avatar_url : friend.requester_avatar_url;
-
-            navigator.serviceWorker.ready.then(registration => {
-                registration.showNotification(notificationTitle, {
-                    body: notificationBody,
-                    icon: friendAvatar || 'https://i.imgur.com/pY959V7.png'
-                });
-            });
-        }
-        
-        chatForm.addEventListener('submit', handleSendMessage);
-        backToFriendsListBtn.addEventListener('click', () => {
-            chatWindow.style.display = 'none';
-            chatPlaceholder.style.display = 'flex';
-            friendsListContainer.classList.remove('hidden');
-            currentChatFriend = null;
-            if (messageChannel) messageChannel.unsubscribe();
-        });
-
-        function listenToMessages() {
-            if (messageChannel) messageChannel.unsubscribe();
-            if (!user) return;
-            
-            const subscriptionFilter = `receiver_id=eq.${user.id}`;
-            messageChannel = supabaseClient.channel('public:messages')
-            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: subscriptionFilter }, 
-                (payload) => {
-                    if (currentChatFriend && payload.new.sender_id === (currentChatFriend.requester_id === user.id ? currentChatFriend.addressee_id : currentChatFriend.requester_id)) {
-                        messagesCache.push(payload.new);
-                        renderMessages();
-                    } else if (document.hidden || !document.hasFocus()) {
-                        showNotification(payload.new);
-                    }
-                })
-            .subscribe();
-        }
-        
         // --- PROFILE PAGE LOGIC ---
         const avatarUploadInput = document.getElementById('avatar-upload');
         const updateNameForm = document.getElementById('update-name-form');
@@ -1667,7 +1289,7 @@
             if (!newName || newName === user.user_metadata.display_name) return;
 
              const { error } = await supabaseClient.auth.updateUser({
-                data: { display_name: newName }
+                 data: { display_name: newName }
             });
             if (error) {
                 profileFeedback.textContent = `Error: ${error.message}`;
@@ -1705,20 +1327,20 @@
              const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
              
              if (error) {
-                if (error.message.toLowerCase().includes('requires recent authentication')) {
-                     profileFeedback.textContent = 'For security, please sign out and sign in again to change password.';
-                } else {
-                    profileFeedback.textContent = `Error: ${error.message}`;
-                }
-                profileFeedback.classList.add('text-red-500');
+                 if (error.message.toLowerCase().includes('requires recent authentication')) {
+                      profileFeedback.textContent = 'For security, please sign out and sign in again to change password.';
+                 } else {
+                     profileFeedback.textContent = `Error: ${error.message}`;
+                 }
+                 profileFeedback.classList.add('text-red-500');
              } else {
-                profileFeedback.textContent = 'Password updated successfully!';
-                profileFeedback.classList.add('text-green-500');
-                changePasswordForm.reset();
+                 profileFeedback.textContent = 'Password updated successfully!';
+                 profileFeedback.classList.add('text-green-500');
+                 changePasswordForm.reset();
              }
              setTimeout(() => {
-                profileFeedback.textContent = '';
-                profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right';
+                 profileFeedback.textContent = '';
+                 profileFeedback.className = 'text-sm mt-2 h-5 text-center sm:text-right';
              }, 5000);
         }
 
@@ -1738,6 +1360,5 @@
     </script>
 </body>
 </html>
-
 
 
